@@ -29,7 +29,12 @@ class UserController extends GetxController {
         handleGetSheets(_account!);
       }
     });
-    googleSignIn.signInSilently();
+    googleSignIn.signInSilently().then((account_) {
+      update();
+      if (account_ != null) {
+        Get.toNamed("/home");
+      }
+    });
   }
 
   Future<void> handleGetSheets(GoogleSignInAccount account) async {
