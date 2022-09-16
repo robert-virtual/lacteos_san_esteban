@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:lateos_san_esteban/pages/form_leche.dart';
 
 class UserBinding implements Bindings {
   @override
@@ -26,7 +27,7 @@ class UserController extends GetxController {
       account = _account;
       update();
       if (account != null) {
-        handleGetSheets(_account!);
+        getLecheSheet();
       }
     });
     googleSignIn.signInSilently().then((account_) {
@@ -37,26 +38,21 @@ class UserController extends GetxController {
     });
   }
 
-  Future<void> handleGetSheets(GoogleSignInAccount account) async {
-    /* _contactText = "Loading contact info..."; */
-    /* update(); */
+  Future<List<ILeche>> getLecheSheet() async {
     final http.Response res = await http.get(
-        Uri.parse('${baseUrl}${spreadsheetId}/values/{Leche!A:D}'),
-        headers: await account.authHeaders);
+        Uri.parse('$baseUrl$spreadsheetId/values/Leche!A:D'),
+        headers: await account!.authHeaders);
     if (res.statusCode != 200) {
-      /* _contactText = "People api gave a ${res.statusCode} response."; */
-      /* update(); */
-      return;
+      throw Exception(res.statusCode);
     }
     final Map<String, dynamic> data =
         json.decode(res.body) as Map<String, dynamic>;
-    /* final String? namedContact = _pickFirstNamedContact(data); */
-    /* if (namedContact != null) { */
-    /*   _contactText = "I see you know $namedContact !!"; */
-    /* } else { */
-    /*   _contactText = "no contacts to display"; */
-    /* } */
-    /* update(); */
+    List<ILeche> leche = List.empty();
+    List lista = List.from(data["values"]);
+    lista.removeAt(0);
+    leche =
+        lista.map((e) => ILeche(double.parse(e[0]), e[1], e[2], e[3])).toList();
+    return leche;
   }
 
   void setAccount(GoogleSignInAccount _account) {

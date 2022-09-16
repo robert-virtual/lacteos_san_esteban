@@ -8,12 +8,13 @@ class Home extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      "/queso",
-      "/mantequilla",
-      "/quesillo",
-      "/cuajada",
-      "/requeson",
-      "/crema"
+      {"image": "milk", "name": "Leche", "route": "/leche"},
+      {"image": "queso", "name": "Queso", "route": "/queso"},
+      {"image": "mantequilla", "name": "Mantequilla", "route": "/mantequilla"},
+      {"image": "quesillo", "name": "Quesillo", "route": "/quesillo"},
+      {"image": "cuajada", "name": "Cuajada", "route": "/cuajada"},
+      {"image": "requeson", "name": "Requeson", "route": "/requeson"},
+      {"image": "crema", "name": "Crema", "route": "/crema"}
     ];
     return Scaffold(
       appBar: AppBar(title: const Text("Lacteos San Esteban")),
@@ -22,12 +23,20 @@ class Home extends GetView<UserController> {
           itemBuilder: (ctx, idx) {
             return GestureDetector(
               onTap: () {
-                Get.toNamed(pages[idx]);
+                Get.toNamed(pages[idx]["route"]!);
               },
-              child: Card(
-                child: ListTile(
-                  title: Text(pages[idx]),
-                  trailing: const Icon(Icons.arrow_right),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      leading: Image.asset("assets/${pages[idx]["image"]!}.jpg",
+                          fit: BoxFit.cover, width: 100.0),
+                      title: Text(pages[idx]["name"]!),
+                      trailing: const Icon(Icons.chevron_right),
+                    ),
+                  ),
                 ),
               ),
             );

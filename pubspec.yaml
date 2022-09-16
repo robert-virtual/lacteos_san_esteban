@@ -37,6 +37,7 @@ dependencies:
   get: ^4.6.5
   google_sign_in: ^5.4.1
   http: ^0.13.5
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -61,8 +62,14 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/queso.jpg
+    - assets/quesillo.jpg
+    - assets/mantequilla.jpg
+    - assets/cuajada.jpg
+    - assets/crema.jpg
+    - assets/requeson.jpg
+    - assets/milk.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
