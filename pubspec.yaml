@@ -70,6 +70,7 @@ flutter:
     - assets/crema.jpg
     - assets/requeson.jpg
     - assets/milk.jpg
+    - assets/san_esteban.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

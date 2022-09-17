@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:lateos_san_esteban/pages/form_leche.dart';
 
 class UserBinding implements Bindings {
   @override
@@ -18,6 +17,7 @@ class UserController extends GetxController {
   ]);
   final spreadsheetId = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ";
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
+  var tipoQueso = "Queso semi seco".obs;
   GoogleSignInAccount? account;
 
   @override
@@ -26,9 +26,6 @@ class UserController extends GetxController {
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? _account) {
       account = _account;
       update();
-      if (account != null) {
-        getLecheSheet();
-      }
     });
     googleSignIn.signInSilently().then((account_) {
       update();
@@ -38,25 +35,36 @@ class UserController extends GetxController {
     });
   }
 
-  Future<List<ILeche>> getLecheSheet() async {
+  Future<List<List>> getSheet(String sheetAndRange) async {
     final http.Response res = await http.get(
-        Uri.parse('$baseUrl$spreadsheetId/values/Leche!A:D'),
+        Uri.parse('$baseUrl$spreadsheetId/values/$sheetAndRange'),
         headers: await account!.authHeaders);
     if (res.statusCode != 200) {
-      throw Exception(res.statusCode);
+      return List.empty();
     }
     final Map<String, dynamic> data =
         json.decode(res.body) as Map<String, dynamic>;
-    List<ILeche> leche = List.empty();
-    List lista = List.from(data["values"]);
+    List<List> lista = List.from(data["values"]);
     lista.removeAt(0);
-    leche =
-        lista.map((e) => ILeche(double.parse(e[0]), e[1], e[2], e[3])).toList();
-    return leche;
+    return lista.reversed.toList();
   }
 
-  void setAccount(GoogleSignInAccount _account) {
-    account = _account;
-    update();
+  Future<String> sendSheet(String sheetAndRange, List values) async {
+    final http.Response res = await http.post(
+        Uri.parse(
+            '$baseUrl$spreadsheetId/values/$sheetAndRange:append?valueInputOption=USER_ENTERED'),
+        headers: await account!.authHeaders,
+        body: jsonEncode({
+          "values": [values]
+        }));
+    if (res.statusCode != 200) {
+      print(res.body);
+      return "Hubo un error al guardar los datos (${res.statusCode})";
+    }
+    return "Datos guardados con exito";
+  }
+
+  void setQueso(String? queso) {
+    tipoQueso.value = queso ?? "Queso semi seco";
   }
 }

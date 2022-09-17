@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
-import 'package:lateos_san_esteban/pages/form_leche.dart';
 
 class Leche extends GetView<UserController> {
-  Leche({Key? key}) : super(key: key);
+  const Leche({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Leche")),
-      body: FutureBuilder<List<ILeche>>(
-          future: controller.getLecheSheet(),
+      body: FutureBuilder<List<List>>(
+          future: controller.getSheet("Leche!A:D"),
           builder: (ctx, snap) {
             if (!snap.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -28,18 +27,41 @@ class Leche extends GetView<UserController> {
                 itemBuilder: (ctx, idx) {
                   return GestureDetector(
                     onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListTile(
-                            title: Text(
-                                "${snap.data![idx].litros} lts | Recibidos por ${snap.data![idx].recibidoPor}"),
-                            subtitle: Text(
-                                "Proveedor ${snap.data![idx].proveedor} | Fecha ${snap.data![idx].fecha}"),
-                            trailing: const Icon(Icons.chevron_right),
-                          ),
+                    child: Card(
+                      margin: const EdgeInsets.all(12.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${snap.data![idx][0]} lts ",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              "Recibidos por ${snap.data![idx][1]} ",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                color: Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              "Proveedor: ${snap.data![idx][2]}",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                color: Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              snap.data![idx][3],
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(color: Colors.black54),
+                            )
+                          ],
                         ),
                       ),
                     ),
@@ -47,7 +69,9 @@ class Leche extends GetView<UserController> {
                 });
           }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Get.toNamed("/leche_form");
+        },
         child: const Icon(Icons.add),
       ),
     );

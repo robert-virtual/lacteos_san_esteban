@@ -20,13 +20,7 @@ class Login extends GetView<UserController> {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Bienvenido a Lacteos San Esteban",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
+            Image.asset("assets/san_esteban.jpg"),
             GetBuilder<UserController>(
                 builder: (_) => _buildBody(controller.account))
           ],
