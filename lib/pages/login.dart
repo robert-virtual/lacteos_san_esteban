@@ -3,10 +3,6 @@ import 'package:get/get.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
-  "https://www.googleapis.com/auth/spreadsheets",
-]);
-
 class Login extends GetView<UserController> {
   const Login({Key? key}) : super(key: key);
 
@@ -59,11 +55,14 @@ class Login extends GetView<UserController> {
 
   Future<void> _handleSignin() async {
     try {
-      await _googleSignIn.signIn();
+      await controller.googleSignIn.signIn();
     } catch (e) {
       Get.snackbar("Error", e.toString());
     }
   }
 
-  Future<void> _handleSignout() => _googleSignIn.disconnect();
+  Future<void> _handleSignout() async {
+    controller.googleSignIn.disconnect();
+    controller.account = null;
+  }
 }
