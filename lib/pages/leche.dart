@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
 class Leche extends GetView<UserController> {
-  const Leche({Key? key}) : super(key: key);
+  Leche({Key? key}) : super(key: key);
+  final f = DateFormat("dd/MM/yyyy hh:mm a");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,13 +37,13 @@ class Leche extends GetView<UserController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "${snap.data![idx][0]} lts ",
+                              "${snap.data![idx][2]} lts ",
                               textAlign: TextAlign.left,
                               style: const TextStyle(fontSize: 20),
                             ),
                             const SizedBox(height: 10.0),
                             Text(
-                              "Recibidos por ${snap.data![idx][1]} ",
+                              "Registrado por ${snap.data![idx][0]} ",
                               textAlign: TextAlign.left,
                               style: const TextStyle(
                                 color: Colors.black54,
@@ -49,7 +51,7 @@ class Leche extends GetView<UserController> {
                             ),
                             const SizedBox(height: 10.0),
                             Text(
-                              "Proveedor: ${snap.data![idx][2]}",
+                              "Proveedor: ${snap.data![idx][3]}",
                               textAlign: TextAlign.left,
                               style: const TextStyle(
                                 color: Colors.black54,
@@ -57,7 +59,7 @@ class Leche extends GetView<UserController> {
                             ),
                             const SizedBox(height: 10.0),
                             Text(
-                              snap.data![idx][3],
+                              f.format(DateTime.parse(snap.data![idx][1])),
                               textAlign: TextAlign.left,
                               style: const TextStyle(color: Colors.black54),
                             )

@@ -23,14 +23,13 @@ void main() {
       GetPage(
           name: "/login", page: () => const Login(), binding: UserBinding()),
       GetPage(name: "/home", page: () => const Home(), binding: UserBinding()),
-      GetPage(
-          name: "/leche", page: () => const Leche(), binding: UserBinding()),
+      GetPage(name: "/leche", page: () => Leche(), binding: UserBinding()),
       GetPage(
           name: "/leche_form", page: () => LecheForm(), binding: UserBinding()),
       GetPage(
           name: "/queso", page: () => const Queso(), binding: UserBinding()),
       GetPage(
-          name: "/queso_form", page: () =>  QuesoForm(), binding: UserBinding()),
+          name: "/queso_form", page: () => QuesoForm(), binding: UserBinding()),
       GetPage(
           name: "/cuajada",
           page: () => const Cuajada(),

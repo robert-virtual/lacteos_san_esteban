@@ -7,6 +7,7 @@ class LecheForm extends GetView<UserController> {
   LecheForm({Key? key}) : super(key: key);
   final litros = TextEditingController();
   final f = DateFormat("dd/MM/yyyy hh:mm a");
+  final f2 = DateFormat("yyyy-MM-dd HH:mm:ss");
   final proveedor = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -55,10 +56,10 @@ class LecheForm extends GetView<UserController> {
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
                       await controller.sendSheet("Leche!A:D", [
-                        litros.text,
                         controller.account!.displayName,
+                        f2.format(DateTime.now()),
+                        litros.text,
                         proveedor.text,
-                        f.format(DateTime.now())
                       ]));
               Get.back();
               Get.snackbar("Guardar Datos", res);
