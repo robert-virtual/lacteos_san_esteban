@@ -5,7 +5,17 @@ import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
 class QuesoForm extends GetView<UserController> {
   QuesoForm({Key? key}) : super(key: key);
-  final litros = TextEditingController();
+  final f2 = DateFormat("yyyy-MM-dd HH:mm:ss");
+  final lecheEntera = TextEditingController();
+  final lecheDescremada = TextEditingController();
+  final sal = TextEditingController();
+  final cuajo = TextEditingController();
+  final sueroParaCuajar = TextEditingController();
+  final chileJalapeno = TextEditingController(text: "0");
+  final chileBolson = TextEditingController(text: "0");
+  /* final chileBolsonRojo = TextEditingController(); */
+  /* final chileBolsonVerde = TextEditingController(); */
+  /* final chileBolsonAmarillo = TextEditingController(); */
   final libras = TextEditingController();
   List<String> quesos = [
     "Queso semi seco",
@@ -31,20 +41,60 @@ class QuesoForm extends GetView<UserController> {
             const SizedBox(height: 20),
             TextField(
               keyboardType: TextInputType.number,
-              controller: litros,
+              controller: libras,
               decoration: const InputDecoration(
                 label: Text(
-                  "Litros de leche usados",
+                  "Libras Producidas",
                 ),
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               keyboardType: TextInputType.number,
-              controller: libras,
+              controller: lecheEntera,
               decoration: const InputDecoration(
                 label: Text(
-                  "Libras Producidas",
+                  "Leche entera usada (Litros)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: lecheDescremada,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Leche descremada usada (Litros)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: sal,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Sal Usada",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: cuajo,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Cuajo Usada",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: sueroParaCuajar,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Suero para Cuajar (Litros)",
                 ),
               ),
             ),
@@ -56,6 +106,34 @@ class QuesoForm extends GetView<UserController> {
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                     .toList(),
                 onChanged: controller.setQueso)),
+            Obx(
+              () => Visibility(
+                  visible: controller.tipoQueso.value == "Queso con chile",
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        controller: chileJalapeno,
+                        decoration: const InputDecoration(
+                          label: Text(
+                            "Chile Jalapeño",
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        controller: chileBolson,
+                        decoration: const InputDecoration(
+                          label: Text(
+                            "Chile bolson verde rojo y amarillo",
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
             const SizedBox(height: 20),
             GetBuilder<UserController>(
                 builder: (_) =>
@@ -71,12 +149,18 @@ class QuesoForm extends GetView<UserController> {
                   loadingWidget:
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
-                      await controller.sendSheet("Queso!A:E", [
-                        litros.text,
+                      await controller.sendSheet("Queso!A:K", [
+                        controller.account!.displayName,
+                        f2.format(DateTime.now()),
                         libras.text,
                         controller.tipoQueso.value,
-                        controller.account!.displayName,
-                        f.format(DateTime.now())
+                        lecheEntera.text,
+                        lecheDescremada.text,
+                        sal.text,
+                        cuajo.text,
+                        sueroParaCuajar.text,
+                        chileJalapeno.text,
+                        chileBolson.text,
                       ]));
               Get.back();
               Get.snackbar("Guardar Datos", res);

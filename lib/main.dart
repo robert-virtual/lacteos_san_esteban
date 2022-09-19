@@ -26,8 +26,7 @@ void main() {
       GetPage(name: "/leche", page: () => Leche(), binding: UserBinding()),
       GetPage(
           name: "/leche_form", page: () => LecheForm(), binding: UserBinding()),
-      GetPage(
-          name: "/queso", page: () => const Queso(), binding: UserBinding()),
+      GetPage(name: "/queso", page: () => Queso(), binding: UserBinding()),
       GetPage(
           name: "/queso_form", page: () => QuesoForm(), binding: UserBinding()),
       GetPage(
