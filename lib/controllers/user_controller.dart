@@ -18,6 +18,7 @@ class UserController extends GetxController {
   final spreadsheetId = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ";
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
   var tipoQueso = "Queso semi seco".obs;
+  var unidad = "".obs;
   GoogleSignInAccount? account;
 
   @override
@@ -35,9 +36,9 @@ class UserController extends GetxController {
     });
   }
 
-  Future<List<List>> getSheet(String sheetAndRange) async {
+  Future<List<List>> getSheet(String sheetAndRange,[String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
     final http.Response res = await http.get(
-        Uri.parse('$baseUrl$spreadsheetId/values/$sheetAndRange'),
+        Uri.parse('$baseUrl$spread/values/$sheetAndRange'),
         headers: await account!.authHeaders);
     if (res.statusCode != 200) {
       return List.empty();
@@ -49,10 +50,10 @@ class UserController extends GetxController {
     return lista.reversed.toList();
   }
 
-  Future<String> sendSheet(String sheetAndRange, List values) async {
+  Future<String> sendSheet(String sheetAndRange, List values,[String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
     final http.Response res = await http.post(
         Uri.parse(
-            '$baseUrl$spreadsheetId/values/$sheetAndRange:append?valueInputOption=USER_ENTERED'),
+            '$baseUrl$spread/values/$sheetAndRange:append?valueInputOption=USER_ENTERED'),
         headers: await account!.authHeaders,
         body: jsonEncode({
           "values": [values]
@@ -66,5 +67,8 @@ class UserController extends GetxController {
 
   void setQueso(String? queso) {
     tipoQueso.value = queso ?? "Queso semi seco";
+  }
+  void setUnidad(String? unidad) {
+    unidad = unidad ?? "";
   }
 }
