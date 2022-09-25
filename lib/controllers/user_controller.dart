@@ -68,7 +68,7 @@ class UserController extends GetxController {
   void setQueso(String? queso) {
     tipoQueso.value = queso ?? "Queso semi seco";
   }
-  void setUnidad(String? unidad) {
-    unidad = unidad ?? "";
+  void setUnidad(String? unidad_) {
+    unidad.value = unidad_ ?? "";
   }
 }
