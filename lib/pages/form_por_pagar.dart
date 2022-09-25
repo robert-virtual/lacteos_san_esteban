@@ -36,7 +36,6 @@ class PorPagarForm extends GetView<UserController> {
             ),
             const SizedBox(height: 20),
             TextField(
-              keyboardType: TextInputType.number,
               controller: servicioProducto,
               decoration: const InputDecoration(
                 label: Text(
@@ -96,11 +95,13 @@ class PorPagarForm extends GetView<UserController> {
                   loadingWidget:
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
-                      await controller.sendSheet("CuentasPorCobrar!A:G", [
+                      await controller.sendSheet("CuentasPorPagar!A:G", [
                         controller.account!.displayName,
                         f2.format(DateTime.now()),
                         servicioProducto.text,
-                        double.parse(cantidad.text),
+                        cantidad.text.isEmpty 
+                        ? "" 
+                        : double.parse(cantidad.text),
                         controller.unidad.value,
                         proveedor.text,
                         double.parse(monto.text)

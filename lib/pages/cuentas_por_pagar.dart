@@ -9,7 +9,24 @@ class PorPagar extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Cuentas por Pagar")),
+      appBar: AppBar(
+        title: const Text("Cuentas por Pagar"),
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          IconButton(
+            onPressed: () {
+              showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2022),
+                  lastDate: DateTime(DateTime.now().year + 5));
+            },
+            icon: const Icon(
+              Icons.date_range,
+            ),
+          )
+        ],
+      ),
       body: FutureBuilder<List<List>>(
           future: controller.getSheet("CuentasPorPagar!A:G"),
           builder: (ctx, snap) {
@@ -37,7 +54,7 @@ class PorPagar extends GetView<UserController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Lps. ${snap.data![idx][6]}",
+                              "Lps. ${snap.data![idx][6]} | ${snap.data![idx][2]}",
                               textAlign: TextAlign.left,
                               style: const TextStyle(fontSize: 20),
                             ),
