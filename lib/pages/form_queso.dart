@@ -74,7 +74,7 @@ class QuesoForm extends GetView<UserController> {
               controller: sal,
               decoration: const InputDecoration(
                 label: Text(
-                  "Sal Usada",
+                  "Sal Usada (gramos)",
                 ),
               ),
             ),
@@ -84,7 +84,7 @@ class QuesoForm extends GetView<UserController> {
               controller: cuajo,
               decoration: const InputDecoration(
                 label: Text(
-                  "Cuajo Usada",
+                  "Cuajo Usado (bolsitas)",
                 ),
               ),
             ),
@@ -117,7 +117,7 @@ class QuesoForm extends GetView<UserController> {
                         controller: chileJalapeno,
                         decoration: const InputDecoration(
                           label: Text(
-                            "Chile Jalapeño",
+                            "Chile Jalapeño (Unidades)",
                           ),
                         ),
                       ),
@@ -127,7 +127,7 @@ class QuesoForm extends GetView<UserController> {
                         controller: chileBolson,
                         decoration: const InputDecoration(
                           label: Text(
-                            "Chile bolson verde rojo y amarillo",
+                            "Chile bolson verde rojo y amarillo (Unidades)",
                           ),
                         ),
                       ),
