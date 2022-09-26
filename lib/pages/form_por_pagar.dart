@@ -24,13 +24,13 @@ class PorPagarForm extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Cuentas por pagar")),
+        appBar: AppBar(title: const Text("Cuentas por Pagar")),
         body: ListView(
           padding: const EdgeInsets.all(10),
           children: [
             const SizedBox(height: 20),
             const Text(
-              "Agregar Cuentas por pagar",
+              "Agregar Cuentas por Pagar",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
@@ -102,7 +102,9 @@ class PorPagarForm extends GetView<UserController> {
                         cantidad.text.isEmpty 
                         ? "" 
                         : double.parse(cantidad.text),
-                        controller.unidad.value,
+                        cantidad.text.isEmpty 
+                        ? "" 
+                        :controller.unidad.value,
                         proveedor.text,
                         double.parse(monto.text)
                       ]));

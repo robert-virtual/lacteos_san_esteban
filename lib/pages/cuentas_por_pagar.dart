@@ -41,59 +41,69 @@ class PorPagar extends GetView<UserController> {
             if (snap.isBlank == true) {
               return const Center(child: Text("No hay datos que mostrar"));
             }
-            return ListView.builder(
-                itemCount: snap.data!.length,
-                itemBuilder: (ctx, idx) {
-                  return GestureDetector(
-                    onTap: () {},
-                    child: Card(
-                      margin: const EdgeInsets.all(12.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Lps. ${snap.data![idx][6]} | ${snap.data![idx][2]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(fontSize: 20),
+            return Obx(
+              () {
+                final items = snap.data!
+                    .where((e) => DateTime.parse(e[1]).isBefore(controller
+                        .fechaFiltro.value
+                        .add(const Duration(days: 1))))
+                    .toList();
+
+                return ListView.builder(
+                    itemCount: snap.data!.length,
+                    itemBuilder: (ctx, idx) {
+                      return GestureDetector(
+                        onTap: () {},
+                        child: Card(
+                          margin: const EdgeInsets.all(12.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Lps. ${snap.data![idx][6]} | ${snap.data![idx][2]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "${snap.data![idx][2]} ${snap.data![idx][3]} ${snap.data![idx][4]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Registrado por ${snap.data![idx][0]} ",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Proveedor: ${snap.data![idx][5]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  f.format(DateTime.parse(snap.data![idx][1])),
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(color: Colors.black54),
+                                )
+                              ],
                             ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "${snap.data![idx][2]} ${snap.data![idx][3]} ${snap.data![idx][4]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "Registrado por ${snap.data![idx][0]} ",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "Proveedor: ${snap.data![idx][5]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              f.format(DateTime.parse(snap.data![idx][1])),
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(color: Colors.black54),
-                            )
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                });
+                      );
+                    });
+              },
+            );
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

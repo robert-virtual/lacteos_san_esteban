@@ -13,9 +13,6 @@ class QuesoForm extends GetView<UserController> {
   final sueroParaCuajar = TextEditingController();
   final chileJalapeno = TextEditingController(text: "0");
   final chileBolson = TextEditingController(text: "0");
-  /* final chileBolsonRojo = TextEditingController(); */
-  /* final chileBolsonVerde = TextEditingController(); */
-  /* final chileBolsonAmarillo = TextEditingController(); */
   final libras = TextEditingController();
   List<String> quesos = [
     "Queso semi seco",
