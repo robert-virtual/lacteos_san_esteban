@@ -3,7 +3,9 @@ import 'package:get/route_manager.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 import 'package:lateos_san_esteban/pages/crema.dart';
 import 'package:lateos_san_esteban/pages/cuajada.dart';
-import 'package:lateos_san_esteban/pages/cuentas_por_pagar.dart';
+import 'package:lateos_san_esteban/pages/form_por_cobrar.dart';
+import 'package:lateos_san_esteban/pages/por_cobrar.dart';
+import 'package:lateos_san_esteban/pages/por_pagar.dart';
 import 'package:lateos_san_esteban/pages/form_leche.dart';
 import 'package:lateos_san_esteban/pages/form_por_pagar.dart';
 import 'package:lateos_san_esteban/pages/form_queso.dart';
@@ -56,6 +58,14 @@ void main() {
       GetPage(
           name: "/form_por_pagar",
           page: () =>  PorPagarForm(),
+          binding: UserBinding()),
+      GetPage(
+          name: "/por_cobrar",
+          page: () =>  PorCobrar(),
+          binding: UserBinding()),
+      GetPage(
+          name: "/form_por_cobrar",
+          page: () =>  PorCobrarForm(),
           binding: UserBinding()),
     ],
   ));

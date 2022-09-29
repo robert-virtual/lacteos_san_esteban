@@ -3,37 +3,22 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
-class Queso extends GetView<UserController> {
+class PorPagar extends GetView<UserController> {
+  PorPagar({Key? key}) : super(key: key);
   final f = DateFormat("dd/MM/yyyy hh:mm a");
-  final fDate = DateFormat("dd/MM/yyyy");
-  final searchFocus = FocusNode();
-  final textGray = const TextStyle(
-    color: Colors.black54,
-  );
   final searchArguments = [
-    "Tipo de queso",
-    "Libras Producidas",
+    "Servicio/Producto",
+    "Cantidad",
+    "Monto",
+    "Proveedor",
     "Registrado por",
     "Fecha"
   ];
-  Queso({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(
-          () => controller.searching.value
-              ? TextField(
-                  focusNode: searchFocus,
-                  onChanged: (text) {
-                    controller.search.value = text;
-                  },
-                  decoration: const InputDecoration(
-                      border: null, hintText: "Buscar..."),
-                )
-              : const Text("Queso"),
-        ),
+        title: const Text("Cuentas por Pagar"),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -66,30 +51,68 @@ class Queso extends GetView<UserController> {
                                 searchArguments[i];
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Text("Servicio/Producto"),
-                                                  TextButton(
-                                                      onPressed: () {},
-                                                      child:
-                                                          const Text("Aplicar"))
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Checkbox(value: false, onChanged: (value){}),
-                                                  const Text(""),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ));
+                                /* showModalBottomSheet( */
+                                /*     context: context, */
+                                /*     builder: (context) => Padding( */
+                                /*           padding: const EdgeInsets.all(8.0), */
+                                /*           child: Column( */
+                                /*             children: [ */
+                                /*               Row( */
+                                /*                 mainAxisAlignment: */
+                                /*                     MainAxisAlignment */
+                                /*                         .spaceBetween, */
+                                /*                 children: [ */
+                                /*                   const Text( */
+                                /*                       "Servicio/Producto"), */
+                                /*                   ElevatedButton( */
+                                /*                       onPressed: () { */
+                                /*                         Navigator.of(context) */
+                                /*                             .pop(); */
+                                /*                       }, */
+                                /*                       child: */
+                                /*                           const Text("Aplicar")) */
+                                /*                 ], */
+                                /*               ), */
+                                /*               FutureBuilder<List<List>>( */
+                                /*                   future: controller */
+                                /*                       .getSheet("Metadata!A:A"), */
+                                /*                   builder: (ctx, snap) { */
+                                /*                     if (!snap.hasData) { */
+                                /*                       return const Center( */
+                                /*                           child: */
+                                /*                               CircularProgressIndicator()); */
+                                /*                     } */
+                                /*                     if (snap.hasError) { */
+                                /*                       return const Center( */
+                                /*                         child: Text( */
+                                /*                             "Ha ocurrido un error al cargar la informacion"), */
+                                /*                       ); */
+                                /*                     } */
+                                /*                     if (snap.isBlank == true) { */
+                                /*                       return const Center( */
+                                /*                           child: Text( */
+                                /*                               "No hay datos que mostrar")); */
+                                /*                     } */
+                                /*                     return Column( */
+                                /*                       children: List.generate( */
+                                /*                           snap.data!.length, */
+                                /*                           (idx) => Row( */
+                                /*                                 children: [ */
+                                /*                                   Checkbox( */
+                                /*                                       value: */
+                                /*                                           false, */
+                                /*                                       onChanged: */
+                                /*                                           (value) {}), */
+                                /*                                   Text(snap */
+                                /*                                           .data![ */
+                                /*                                       idx][0]), */
+                                /*                                 ], */
+                                /*                               )), */
+                                /*                     ); */
+                                /*                   }), */
+                                /*             ], */
+                                /*           ), */
+                                /*         )); */
                                 break;
                               case "Fecha":
                                 showDatePicker(
@@ -118,21 +141,15 @@ class Queso extends GetView<UserController> {
           IconButton(
               onPressed: () {
                 controller.searching.value = !controller.searching.value;
-                searchFocus.requestFocus();
               },
               icon: const Icon(Icons.search)),
           IconButton(
             onPressed: () {
               showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2022),
-                lastDate: DateTime(DateTime.now().year + 5),
-              ).then((x) {
-                controller.fechaFiltro.value = x ?? DateTime.now();
-                Get.snackbar(
-                    "Fecha ", fDate.format(controller.fechaFiltro.value));
-              });
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2022),
+                  lastDate: DateTime(DateTime.now().year + 5));
             },
             icon: const Icon(
               Icons.date_range,
@@ -141,7 +158,7 @@ class Queso extends GetView<UserController> {
         ],
       ),
       body: FutureBuilder<List<List>>(
-          future: controller.getSheet("Queso!A:K"),
+          future: controller.getSheet("CuentasPorPagar!A:G"),
           builder: (ctx, snap) {
             if (!snap.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -161,6 +178,7 @@ class Queso extends GetView<UserController> {
                         .fechaFiltro.value
                         .add(const Duration(days: 1))))
                     .toList();
+
                 return ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (ctx, idx) {
@@ -174,79 +192,39 @@ class Queso extends GetView<UserController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${items[idx][3]} | ${items[idx][2]} lbs producidas",
+                                  "Lps. ${items[idx][6]} | ${items[idx][2]}",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(fontSize: 20),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Leche Entera usada: ${items[idx][4]} lts ",
+                                  "${items[idx][2]} ${items[idx][3]} ${items[idx][4]}",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
-                                      fontSize: 15, color: Colors.black54),
+                                    color: Colors.black54,
+                                  ),
                                 ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Leche Descremada usada: ${items[idx][5]} lts ",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      fontSize: 15, color: Colors.black54),
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Tipo de Queso: ${items[idx][3]}",
-                                  textAlign: TextAlign.left,
-                                  style: textGray,
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Sal: ${items[idx][6]}",
-                                  textAlign: TextAlign.left,
-                                  style: textGray,
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Cuajo: ${items[idx][7]}",
-                                  textAlign: TextAlign.left,
-                                  style: textGray,
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Suero para Cuajar: ${items[idx][8]} lts",
-                                  textAlign: TextAlign.left,
-                                  style: textGray,
-                                ),
-                                Visibility(
-                                    visible: items[idx][3] == "Queso con chile",
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 10.0),
-                                        Text(
-                                          "Chile Jalapeño: ${items[idx][9]}",
-                                          textAlign: TextAlign.left,
-                                          style: textGray,
-                                        ),
-                                        const SizedBox(height: 10.0),
-                                        Text(
-                                          "Chile bolson verde rojo y amarillo: ${items[idx][10]}",
-                                          textAlign: TextAlign.left,
-                                          style: textGray,
-                                        ),
-                                      ],
-                                    )),
                                 const SizedBox(height: 10.0),
                                 Text(
                                   "Registrado por ${items[idx][0]} ",
                                   textAlign: TextAlign.left,
-                                  style: textGray,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Proveedor: ${items[idx][5]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
                                   f.format(DateTime.parse(items[idx][1])),
                                   textAlign: TextAlign.left,
-                                  style: textGray,
+                                  style: const TextStyle(color: Colors.black54),
                                 )
                               ],
                             ),
@@ -259,7 +237,7 @@ class Queso extends GetView<UserController> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.toNamed("/queso_form");
+          Get.toNamed("/form_por_pagar");
         },
         child: const Icon(Icons.add),
       ),

@@ -20,6 +20,10 @@ class UserController extends GetxController {
   var tipoQueso = "Queso semi seco".obs;
   var fechaFiltro = DateTime.now().obs;
   var unidad = "".obs;
+  var searching = false.obs;
+  var search = "".obs;
+  var servicioProducto = "".obs;
+  var searchSelectedaArg = "".obs;
   GoogleSignInAccount? account;
 
   @override

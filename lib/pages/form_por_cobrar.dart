@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
-class PorPagarForm extends GetView<UserController> {
-  PorPagarForm({Key? key}) : super(key: key);
+class PorCobrarForm extends GetView<UserController> {
+  PorCobrarForm({Key? key}) : super(key: key);
   final servicioProducto = TextEditingController();
   final monto = TextEditingController();
   final cantidad = TextEditingController();
@@ -24,25 +24,22 @@ class PorPagarForm extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Cuentas por Pagar")),
+        appBar: AppBar(title: const Text("Cuentas por Cobrar")),
         body: ListView(
           padding: const EdgeInsets.all(10),
           children: [
             const SizedBox(height: 20),
             const Text(
-              "Agregar Cuentas por Pagar",
+              "Agregar Cuentas por Cobrar",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Servicio/Producto",
-            ),
             FutureBuilder<List<List>>(
-                future: controller.getSheet("Metadata!A:A"),
+                future: controller.getSheet("Metadata!A2:A8"),
                 builder: (ctx, snap) {
                   if (!snap.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child:  CircularProgressIndicator());
                   }
                   if (snap.hasError) {
                     return const Text(
@@ -51,69 +48,35 @@ class PorPagarForm extends GetView<UserController> {
                   if (snap.isBlank == true) {
                     return const Text("No hay datos que mostrar");
                   }
-                  controller.servicioProducto.value = snap.data![0][0];
-                  return Obx(
-                    () => DropdownButton<String>(
-                        value: controller.servicioProducto.value,
-                        items: snap.data!
-                            .map((e) => DropdownMenuItem(
-                                value: e[0] as String, child: Text(e[0])))
-                            .toList(),
-                        onChanged: (text) {
-                          controller.servicioProducto.value =
-                              text ?? snap.data![0][0];
-                        }),
-                  );
+                  return DropdownButton<String>(
+                      underline: null,
+                      hint: const Text("Servicio/Producto"),
+                      value: servicioProducto.text,
+                      items: snap.data!
+                          .map((e) => DropdownMenuItem(
+                              value: e[0] as String, child: Text(e[0])))
+                          .toList(),
+                      onChanged: (text) {
+                        servicioProducto.text = text ?? "";
+                      });
                 }),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Flexible(
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    controller: cantidad,
-                    decoration: const InputDecoration(
-                      label: Text(
-                        "Cantidad",
-                      ),
-                    ),
-                  ),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: cantidad,
+              decoration: InputDecoration(
+                label: const Text(
+                  "Cantidad",
                 ),
-                Column(
-                  children: [
-                  const Text("Unidad de medida"),
-                    FutureBuilder<List<List>>(
-                        future: controller.getSheet("Metadata!B:B"),
-                        builder: (ctx, snap) {
-                          if (!snap.hasData) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          if (snap.hasError) {
-                            return const Text(
-                                "Ha ocurrido un error al cargar la informacion");
-                          }
-                          if (snap.isBlank == true) {
-                            return const Text("No hay datos que mostrar");
-                          }
-                          controller.unidad.value = snap.data![0][0];
-                          return Obx(
-                            () => DropdownButton<String>(
-                                underline: null,
-                                value: controller.unidad.value,
-                                items: snap.data!
-                                    .map(
-                                      (e) => DropdownMenuItem(
-                                        value: e[0] as String,
-                                        child: Text(e[0]),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: controller.setUnidad),
-                          );
-                        }),
-                  ],
-                ),
-              ],
+                suffix: Obx(() => DropdownButton<String>(
+                    underline: null,
+                    hint: const Text("Unidad de medida"),
+                    value: controller.unidad.value,
+                    items: unidades
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: controller.setUnidad)),
+              ),
             ),
             const SizedBox(height: 20),
             TextField(

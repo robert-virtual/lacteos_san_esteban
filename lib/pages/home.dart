@@ -9,6 +9,7 @@ class Home extends GetView<UserController> {
   Widget build(BuildContext context) {
     final pages = [
       {"image": "por_pagar", "name": "Cuentas por Pagar", "route": "/por_pagar"},
+      {"image": "por_cobrar", "name": "Cuentas por Cobrar", "route": "/por_cobrar"},
       {"image": "queso", "name": "Queso", "route": "/queso"},
       {"image": "mantequilla", "name": "Mantequilla", "route": "/mantequilla"},
       {"image": "quesillo", "name": "Quesillo", "route": "/quesillo"},
