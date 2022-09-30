@@ -46,9 +46,23 @@ class Login extends GetView<UserController> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
+        const SizedBox(height: 10),
         const Text("Usted no ha iniciado session"),
+        const SizedBox(height: 10),
         ElevatedButton(
-            onPressed: _handleSignin, child: const Text("Iniciar session"))
+            onPressed: _handleSignin,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Iniciar session con google"),
+                const SizedBox(width: 10),
+                Image.asset(
+                  "assets/google.png",
+                  height: 25.0,
+                )
+              ],
+            ))
       ],
     );
   }
