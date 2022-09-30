@@ -43,14 +43,14 @@ class PorPagar extends GetView<UserController> {
                             ),
                           ),
                           onSelected: (selected) {
+                            controller.searchSelectedaArg.value =
+                                searchArguments[i];
                                 if (!selected) {
                                   controller.searchSelectedaArg.value = "";
-                                  return;
                                 }
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
                                 if (!selected) {
-                                  /* controller.searchSelectedaArg.value = ""; */
                                   controller.serviciosProductosPagar.value = [];
                                   return;
                                 }
@@ -69,8 +69,6 @@ class PorPagar extends GetView<UserController> {
                                 break;
                               default:
                             }
-                            controller.searchSelectedaArg.value =
-                                searchArguments[i];
                           },
                           selected: controller.searchSelectedaArg.value ==
                               searchArguments[i],
@@ -81,25 +79,6 @@ class PorPagar extends GetView<UserController> {
                 ],
               ),
             )),
-        actions: [
-          IconButton(
-              onPressed: () {
-                controller.searching.value = !controller.searching.value;
-              },
-              icon: const Icon(Icons.search)),
-          IconButton(
-            onPressed: () {
-              showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2022),
-                  lastDate: DateTime(DateTime.now().year + 5));
-            },
-            icon: const Icon(
-              Icons.date_range,
-            ),
-          )
-        ],
       ),
       body: FutureBuilder<List<List>>(
           future: controller.getSheet("CuentasPorPagar!A:G"),
