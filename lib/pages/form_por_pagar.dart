@@ -27,33 +27,17 @@ class PorPagarForm extends GetView<UserController> {
             const Text(
               "Servicio/Producto",
             ),
-            FutureBuilder<List<List>>(
-                future: controller.getSheet("Metadata!A:A"),
-                builder: (ctx, snap) {
-                  if (!snap.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snap.hasError) {
-                    return const Text(
-                        "Ha ocurrido un error al cargar la informacion");
-                  }
-                  if (snap.isBlank == true) {
-                    return const Text("No hay datos que mostrar");
-                  }
-                  controller.servicioProductoPagar.value = snap.data![0][0];
-                  return Obx(
-                    () => DropdownButton<String>(
-                        value: controller.servicioProductoPagar.value,
-                        items: snap.data!
-                            .map((e) => DropdownMenuItem(
-                                value: e[0] as String, child: Text(e[0])))
-                            .toList(),
-                        onChanged: (text) {
-                          controller.servicioProductoPagar.value =
-                              text ?? snap.data![0][0];
-                        }),
-                  );
-                }),
+            Obx(
+              () => DropdownButton<String>(
+                  value: controller.servicioProductoPagar.value,
+                  items: controller.serviciosProductosPagarCopy.value
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (text) {
+                    controller.servicioProductoPagar.value =
+                        text ?? controller.serviciosProductosPagarCopy.value[0];
+                  }),
+            ),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -70,36 +54,38 @@ class PorPagarForm extends GetView<UserController> {
                 ),
                 Column(
                   children: [
-                  const Text("Unidad de medida"),
+                    const Text("Unidad de medida"),
                     FutureBuilder<List<List>>(
-                        future: controller.getSheet("Metadata!B:B"),
-                        builder: (ctx, snap) {
-                          if (!snap.hasData) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          if (snap.hasError) {
-                            return const Text(
-                                "Ha ocurrido un error al cargar la informacion");
-                          }
-                          if (snap.isBlank == true) {
-                            return const Text("No hay datos que mostrar");
-                          }
-                          controller.unidad.value = snap.data![0][0];
-                          return Obx(
-                            () => DropdownButton<String>(
-                                underline: null,
-                                value: controller.unidad.value,
-                                items: snap.data!
-                                    .map(
-                                      (e) => DropdownMenuItem(
-                                        value: e[0] as String,
-                                        child: Text(e[0]),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: controller.setUnidad),
-                          );
-                        }),
+                      future: controller.getSheet("Metadata!B:B"),
+                      builder: (ctx, snap) {
+                        if (!snap.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snap.hasError) {
+                          return const Text(
+                              "Ha ocurrido un error al cargar la informacion");
+                        }
+                        if (snap.isBlank == true) {
+                          return const Text("No hay datos que mostrar");
+                        }
+                        controller.unidad.value = snap.data![0][0];
+                        return Obx(
+                          () => DropdownButton<String>(
+                              underline: null,
+                              value: controller.unidad.value,
+                              items: snap.data!
+                                  .map(
+                                    (e) => DropdownMenuItem(
+                                      value: e[0] as String,
+                                      child: Text(e[0]),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: controller.setUnidad),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ],
@@ -114,14 +100,37 @@ class PorPagarForm extends GetView<UserController> {
                 ),
               ),
             ),
-            TextField(
-              controller: proveedor,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Proveedor",
-                ),
-              ),
-            ),
+            FutureBuilder<List<List>>(
+                future: controller.getSheet("Metadata!D:D"),
+                builder: (ctx, snap) {
+                  if (!snap.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snap.hasError) {
+                    return const Text(
+                        "Ha ocurrido un error al cargar la informacion");
+                  }
+                  if (snap.isBlank == true) {
+                    return const Text("No hay datos que mostrar");
+                  }
+                  controller.unidad.value = snap.data![0][0];
+                  return Obx(
+                    () => DropdownButton<String>(
+                        underline: null,
+                        value: controller.proveedor.value,
+                        items: snap.data!
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e[0] as String,
+                                child: Text(e[0]),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (text){
+                            controller.proveedor.value = text ?? "";
+                        }),
+                  );
+                }),
             const SizedBox(height: 20),
             GetBuilder<UserController>(
               builder: (_) =>

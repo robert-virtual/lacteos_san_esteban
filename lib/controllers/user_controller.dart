@@ -20,14 +20,24 @@ class UserController extends GetxController {
   var tipoQueso = "Queso semi seco".obs;
   var fechaFiltro = DateTime.now().obs;
   var unidad = "".obs;
+
+  var proveedor = "".obs;
+  var proveedores = [""].obs;
+
+  var cliente = "".obs;
+  var clientes = [""].obs;
+
   var searching = false.obs;
   var search = "".obs;
+
   var servicioProductoPagar = "".obs;
   var serviciosProductosPagar = [].obs;
   var serviciosProductosPagarCopy = [""].obs;
 
   var servicioProductoCobrar = "".obs;
   var serviciosProductosCobrar = [].obs;
+  var serviciosProductosCobrarCopy = [""].obs;
+
   var searchSelectedaArg = "".obs;
   GoogleSignInAccount? account;
 
@@ -37,13 +47,13 @@ class UserController extends GetxController {
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? _account) {
       account = _account;
       update();
-      loadServiciosPagar();
+      loadMetadata();
     });
     googleSignIn.signInSilently().then((account_) {
       update();
       if (account_ != null) {
         Get.toNamed("/home");
-        loadServiciosPagar();
+        loadMetadata();
       }
     });
   }
@@ -87,8 +97,11 @@ class UserController extends GetxController {
     unidad.value = unidad_ ?? "";
   }
 
-  Future<void> loadServiciosPagar() async {
-    serviciosProductosPagarCopy.value = (await getSheet("Metadata!A:A")).map((e) => e[0] as String).toList();
-    /* serviciosProductosPagarCopy.value = serviciosProductosPagar.value; */
+  Future<void> loadMetadata() async {
+
+    serviciosProductosPagarCopy.value =
+        (await getSheet("Metadata!A:A")).map((e) => e[0] as String).toList();
+    servicioProductoPagar.value =
+        serviciosProductosPagarCopy.value[0];
   }
 }

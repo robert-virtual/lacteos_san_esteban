@@ -32,8 +32,8 @@ class Home extends GetView<UserController> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
-                      leading: Image.asset("assets/${pages[idx]["image"]!}.jpg",
-                          fit: BoxFit.cover, width: 100.0),
+                      leading: Image.asset("assets/${pages[idx]["image"]!}.png",
+                           width: 100.0),
                       title: Text(pages[idx]["name"]!),
                       trailing: const Icon(Icons.chevron_right),
                     ),

@@ -8,7 +8,6 @@ class PorPagar extends GetView<UserController> {
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   final searchArguments = [
     "Servicio/Producto",
-    "Cantidad",
     "Monto",
     "Proveedor",
     "Registrado por",
@@ -93,7 +92,7 @@ class PorPagar extends GetView<UserController> {
               () {
                 final items = snap.data!
                     .where(
-                      (e) => filterName(e[2]),
+                      (e) => filterName(e[2]) && filterDate(e[1]),
                     )
                     .toList();
 
