@@ -31,17 +31,12 @@ class PorPagar extends GetView<UserController> {
                       searchArguments.length,
                       (i) => Obx(
                         () => ChoiceChip(
-                          label: Obx(
-                            () => Row(
+                          label: Row(
                               children: [
                                 Text(searchArguments[i]),
-                                Icon(controller.searchSelectedaArg.value ==
-                                        searchArguments[i]
-                                    ? Icons.close
-                                    : Icons.expand_more)
+                                const Icon(Icons.expand_more)
                               ],
                             ),
-                          ),
                           onSelected: (selected) {
                             controller.searchSelectedaArg.value =
                                 searchArguments[i];
@@ -50,10 +45,10 @@ class PorPagar extends GetView<UserController> {
                                 }
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
-                                if (!selected) {
-                                  controller.serviciosProductosPagar.value = [];
-                                  return;
-                                }
+                                /* if (!selected) { */
+                                /*   controller.serviciosProductosPagar.value = []; */
+                                /*   return; */
+                                /* } */
                                 buildShowModalBottomSheet(context);
                                 break;
                               case "Fecha":

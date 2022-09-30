@@ -5,22 +5,11 @@ import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
 class PorPagarForm extends GetView<UserController> {
   PorPagarForm({Key? key}) : super(key: key);
-  final servicioProducto = TextEditingController();
   final monto = TextEditingController();
   final cantidad = TextEditingController();
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   final f2 = DateFormat("yyyy-MM-dd HH:mm:ss");
   final proveedor = TextEditingController();
-  final unidades = [
-    "litros",
-    "libras",
-    "gramos",
-    "bolsitas",
-    "unidades",
-    "horas",
-    "dias",
-    ""
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +141,7 @@ class PorPagarForm extends GetView<UserController> {
                       await controller.sendSheet("CuentasPorPagar!A:G", [
                         controller.account!.displayName,
                         f2.format(DateTime.now()),
-                        servicioProducto.text,
+                        controller.servicioProductoPagar.value,
                         cantidad.text.isEmpty
                             ? ""
                             : double.parse(cantidad.text),
