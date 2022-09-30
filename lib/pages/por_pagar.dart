@@ -43,14 +43,15 @@ class PorPagar extends GetView<UserController> {
                             ),
                           ),
                           onSelected: (selected) {
+                                if (!selected) {
+                                  controller.searchSelectedaArg.value = "";
+                                  return;
+                                }
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
                                 if (!selected) {
-                                  controller.searchSelectedaArg.value = "";
-                                  controller.serviciosProductosPagar.value =
-                                      controller.serviciosProductosPagar.value
-                                          .map((e) => e.replaceAll("_", ""))
-                                          .toList();
+                                  /* controller.searchSelectedaArg.value = ""; */
+                                  controller.serviciosProductosPagar.value = [];
                                   return;
                                 }
                                 buildShowModalBottomSheet(context);
@@ -207,37 +208,23 @@ class PorPagar extends GetView<UserController> {
           Obx(
             () => Column(
               children: List.generate(
-                controller.serviciosProductosPagar.value.length,
+                controller.serviciosProductosPagarCopy.value.length,
                 (idx) => CheckboxListTile(
-                  title: Text(controller.serviciosProductosPagar.value[idx]),
+                  title:
+                      Text(controller.serviciosProductosPagarCopy.value[idx]),
                   controlAffinity: ListTileControlAffinity.leading,
                   value: controller.serviciosProductosPagar.value.contains(
-                      controller.serviciosProductosPagar.value[idx]
-                          .replaceAll("_", "")),
+                      controller.serviciosProductosPagarCopy.value[idx]),
                   onChanged: (value) {
-                    print(
-                        "onchange ${controller.serviciosProductosPagar.value[idx]} $value");
                     if (value == true) {
-                      controller.serviciosProductosPagar.value = controller
-                          .serviciosProductosPagar.value
-                          .map((e) =>
-                              e == controller.serviciosProductosPagar.value[idx]
-                                  ? e.replaceAll("_", "")
-                                  : e)
-                          .toList();
+                      controller.serviciosProductosPagar.value = [
+                        ...controller.serviciosProductosPagar.value,
+                        controller.serviciosProductosPagarCopy.value[idx]
+                      ];
                       return;
                     }
-                    controller.serviciosProductosPagar.value = controller
-                        .serviciosProductosPagar.value
-                        .map((e) =>
-                            e == controller.serviciosProductosPagar.value[idx]
-                                ? e
-                                : e.contains("_")
-                                    ? e
-                                    : "${e}_")
-                        .toList();
-                    print(controller.serviciosProductosPagar.value);
-                    /* controller.serviciosProductosPagar.value = list; */
+                      controller.serviciosProductosPagar.value = controller.serviciosProductosPagar.value.where((e) => e != controller.serviciosProductosPagarCopy.value[idx]).toList();
+
                   },
                 ),
               ),
@@ -257,6 +244,10 @@ class PorPagar extends GetView<UserController> {
   }
 
   bool filterName(String servicioProducto) {
+    if (controller.serviciosProductosPagar.value.isEmpty) {
+      return controller.serviciosProductosPagarCopy.value
+          .contains(servicioProducto);
+    }
     return controller.serviciosProductosPagar.value.contains(servicioProducto);
   }
 }

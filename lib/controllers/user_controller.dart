@@ -23,7 +23,9 @@ class UserController extends GetxController {
   var searching = false.obs;
   var search = "".obs;
   var servicioProductoPagar = "".obs;
-  var serviciosProductosPagar = [""].obs;
+  var serviciosProductosPagar = [].obs;
+  var serviciosProductosPagarCopy = [""].obs;
+
   var servicioProductoCobrar = "".obs;
   var serviciosProductosCobrar = [].obs;
   var searchSelectedaArg = "".obs;
@@ -86,6 +88,7 @@ class UserController extends GetxController {
   }
 
   Future<void> loadServiciosPagar() async {
-    serviciosProductosPagar.value = (await getSheet("Metadata!A:A")).map((e) => e[0] as String).toList();
+    serviciosProductosPagarCopy.value = (await getSheet("Metadata!A:A")).map((e) => e[0] as String).toList();
+    /* serviciosProductosPagarCopy.value = serviciosProductosPagar.value; */
   }
 }
