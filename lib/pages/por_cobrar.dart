@@ -35,7 +35,7 @@ class PorCobrar extends GetView<UserController> {
                             () => Row(
                               children: [
                                 Text(searchArguments[i]),
-                                Icon(controller.servicioProducto.value ==
+                                Icon(controller.servicioProductoPagar.value ==
                                         searchArguments[i]
                                     ? Icons.close
                                     : Icons.expand_more)
@@ -44,10 +44,10 @@ class PorCobrar extends GetView<UserController> {
                           ),
                           onSelected: (selected) {
                             if (!selected) {
-                              controller.servicioProducto.value = "";
+                              controller.servicioProductoPagar.value = "";
                               return;
                             }
-                            controller.servicioProducto.value =
+                            controller.servicioProductoPagar.value =
                                 searchArguments[i];
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
@@ -93,7 +93,7 @@ class PorCobrar extends GetView<UserController> {
                               default:
                             }
                           },
-                          selected: controller.servicioProducto.value ==
+                          selected: controller.servicioProductoPagar.value ==
                               searchArguments[i],
                         ),
                       ),

@@ -51,16 +51,16 @@ class PorPagarForm extends GetView<UserController> {
                   if (snap.isBlank == true) {
                     return const Text("No hay datos que mostrar");
                   }
-                  controller.servicioProducto.value = snap.data![0][0];
+                  controller.servicioProductoPagar.value = snap.data![0][0];
                   return Obx(
                     () => DropdownButton<String>(
-                        value: controller.servicioProducto.value,
+                        value: controller.servicioProductoPagar.value,
                         items: snap.data!
                             .map((e) => DropdownMenuItem(
                                 value: e[0] as String, child: Text(e[0])))
                             .toList(),
                         onChanged: (text) {
-                          controller.servicioProducto.value =
+                          controller.servicioProductoPagar.value =
                               text ?? snap.data![0][0];
                         }),
                   );

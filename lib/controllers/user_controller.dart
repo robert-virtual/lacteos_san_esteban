@@ -22,7 +22,10 @@ class UserController extends GetxController {
   var unidad = "".obs;
   var searching = false.obs;
   var search = "".obs;
-  var servicioProducto = "".obs;
+  var servicioProductoPagar = "".obs;
+  var serviciosProductosPagar = [""].obs;
+  var servicioProductoCobrar = "".obs;
+  var serviciosProductosCobrar = [].obs;
   var searchSelectedaArg = "".obs;
   GoogleSignInAccount? account;
 
@@ -32,16 +35,19 @@ class UserController extends GetxController {
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? _account) {
       account = _account;
       update();
+      loadServiciosPagar();
     });
     googleSignIn.signInSilently().then((account_) {
       update();
       if (account_ != null) {
         Get.toNamed("/home");
+        loadServiciosPagar();
       }
     });
   }
 
-  Future<List<List>> getSheet(String sheetAndRange,[String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
+  Future<List<List>> getSheet(String sheetAndRange,
+      [String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
     final http.Response res = await http.get(
         Uri.parse('$baseUrl$spread/values/$sheetAndRange'),
         headers: await account!.authHeaders);
@@ -55,7 +61,8 @@ class UserController extends GetxController {
     return lista.reversed.toList();
   }
 
-  Future<String> sendSheet(String sheetAndRange, List values,[String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
+  Future<String> sendSheet(String sheetAndRange, List values,
+      [String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
     final http.Response res = await http.post(
         Uri.parse(
             '$baseUrl$spread/values/$sheetAndRange:append?valueInputOption=USER_ENTERED'),
@@ -73,7 +80,12 @@ class UserController extends GetxController {
   void setQueso(String? queso) {
     tipoQueso.value = queso ?? "Queso semi seco";
   }
+
   void setUnidad(String? unidad_) {
     unidad.value = unidad_ ?? "";
+  }
+
+  Future<void> loadServiciosPagar() async {
+    serviciosProductosPagar.value = (await getSheet("Metadata!A:A")).map((e) => e[0] as String).toList();
   }
 }

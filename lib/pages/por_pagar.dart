@@ -43,76 +43,17 @@ class PorPagar extends GetView<UserController> {
                             ),
                           ),
                           onSelected: (selected) {
-                            if (!selected) {
-                              controller.searchSelectedaArg.value = "";
-                              return;
-                            }
-                            controller.searchSelectedaArg.value =
-                                searchArguments[i];
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
-                                /* showModalBottomSheet( */
-                                /*     context: context, */
-                                /*     builder: (context) => Padding( */
-                                /*           padding: const EdgeInsets.all(8.0), */
-                                /*           child: Column( */
-                                /*             children: [ */
-                                /*               Row( */
-                                /*                 mainAxisAlignment: */
-                                /*                     MainAxisAlignment */
-                                /*                         .spaceBetween, */
-                                /*                 children: [ */
-                                /*                   const Text( */
-                                /*                       "Servicio/Producto"), */
-                                /*                   ElevatedButton( */
-                                /*                       onPressed: () { */
-                                /*                         Navigator.of(context) */
-                                /*                             .pop(); */
-                                /*                       }, */
-                                /*                       child: */
-                                /*                           const Text("Aplicar")) */
-                                /*                 ], */
-                                /*               ), */
-                                /*               FutureBuilder<List<List>>( */
-                                /*                   future: controller */
-                                /*                       .getSheet("Metadata!A:A"), */
-                                /*                   builder: (ctx, snap) { */
-                                /*                     if (!snap.hasData) { */
-                                /*                       return const Center( */
-                                /*                           child: */
-                                /*                               CircularProgressIndicator()); */
-                                /*                     } */
-                                /*                     if (snap.hasError) { */
-                                /*                       return const Center( */
-                                /*                         child: Text( */
-                                /*                             "Ha ocurrido un error al cargar la informacion"), */
-                                /*                       ); */
-                                /*                     } */
-                                /*                     if (snap.isBlank == true) { */
-                                /*                       return const Center( */
-                                /*                           child: Text( */
-                                /*                               "No hay datos que mostrar")); */
-                                /*                     } */
-                                /*                     return Column( */
-                                /*                       children: List.generate( */
-                                /*                           snap.data!.length, */
-                                /*                           (idx) => Row( */
-                                /*                                 children: [ */
-                                /*                                   Checkbox( */
-                                /*                                       value: */
-                                /*                                           false, */
-                                /*                                       onChanged: */
-                                /*                                           (value) {}), */
-                                /*                                   Text(snap */
-                                /*                                           .data![ */
-                                /*                                       idx][0]), */
-                                /*                                 ], */
-                                /*                               )), */
-                                /*                     ); */
-                                /*                   }), */
-                                /*             ], */
-                                /*           ), */
-                                /*         )); */
+                                if (!selected) {
+                                  controller.searchSelectedaArg.value = "";
+                                  controller.serviciosProductosPagar.value =
+                                      controller.serviciosProductosPagar.value
+                                          .map((e) => e.replaceAll("_", ""))
+                                          .toList();
+                                  return;
+                                }
+                                buildShowModalBottomSheet(context);
                                 break;
                               case "Fecha":
                                 showDatePicker(
@@ -127,6 +68,8 @@ class PorPagar extends GetView<UserController> {
                                 break;
                               default:
                             }
+                            controller.searchSelectedaArg.value =
+                                searchArguments[i];
                           },
                           selected: controller.searchSelectedaArg.value ==
                               searchArguments[i],
@@ -174,9 +117,9 @@ class PorPagar extends GetView<UserController> {
             return Obx(
               () {
                 final items = snap.data!
-                    .where((e) => DateTime.parse(e[1]).isBefore(controller
-                        .fechaFiltro.value
-                        .add(const Duration(days: 1))))
+                    .where(
+                      (e) => filterName(e[2]),
+                    )
                     .toList();
 
                 return ListView.builder(
@@ -242,5 +185,78 @@ class PorPagar extends GetView<UserController> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        padding: const EdgeInsets.all(8.0),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Servicio/Producto"),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Aplicar"))
+            ],
+          ),
+          Obx(
+            () => Column(
+              children: List.generate(
+                controller.serviciosProductosPagar.value.length,
+                (idx) => CheckboxListTile(
+                  title: Text(controller.serviciosProductosPagar.value[idx]),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: controller.serviciosProductosPagar.value.contains(
+                      controller.serviciosProductosPagar.value[idx]
+                          .replaceAll("_", "")),
+                  onChanged: (value) {
+                    print(
+                        "onchange ${controller.serviciosProductosPagar.value[idx]} $value");
+                    if (value == true) {
+                      controller.serviciosProductosPagar.value = controller
+                          .serviciosProductosPagar.value
+                          .map((e) =>
+                              e == controller.serviciosProductosPagar.value[idx]
+                                  ? e.replaceAll("_", "")
+                                  : e)
+                          .toList();
+                      return;
+                    }
+                    controller.serviciosProductosPagar.value = controller
+                        .serviciosProductosPagar.value
+                        .map((e) =>
+                            e == controller.serviciosProductosPagar.value[idx]
+                                ? e
+                                : e.contains("_")
+                                    ? e
+                                    : "${e}_")
+                        .toList();
+                    print(controller.serviciosProductosPagar.value);
+                    /* controller.serviciosProductosPagar.value = list; */
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool filterDate(String date) {
+    return DateTime.parse(date).isBefore(
+      controller.fechaFiltro.value.add(
+        const Duration(days: 1),
+      ),
+    );
+  }
+
+  bool filterName(String servicioProducto) {
+    return controller.serviciosProductosPagar.value.contains(servicioProducto);
   }
 }
