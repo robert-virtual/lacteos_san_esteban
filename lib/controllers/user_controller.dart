@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter_launcher_icons/utils.dart';
 import 'package:get/get.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
+
+enum MajorDimension { COLUMNS, ROWS }
 
 class UserBinding implements Bindings {
   @override
@@ -20,6 +23,7 @@ class UserController extends GetxController {
   var tipoQueso = "Queso semi seco".obs;
   var fechaFiltro = DateTime.now().obs;
   var unidad = "".obs;
+  var unidades = [""].obs;
 
   var proveedor = "".obs;
   var proveedores = [""].obs;
@@ -58,19 +62,30 @@ class UserController extends GetxController {
     });
   }
 
-  Future<List<List>> getSheet(String sheetAndRange,
-      [String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
+  Future<List<List>> getSheet(
+    String sheetAndRange, {
+    String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ",
+    MajorDimension majorDimension = MajorDimension.ROWS,
+    reversed = true,
+    removeFisrt = true,
+  }) async {
     final http.Response res = await http.get(
-        Uri.parse('$baseUrl$spread/values/$sheetAndRange'),
+        Uri.parse(
+            '$baseUrl$spread/values/$sheetAndRange?majorDimension=${majorDimension.name}'),
         headers: await account!.authHeaders);
     if (res.statusCode != 200) {
+      print(prettifyJsonEncode(jsonDecode(res.body)));
       return List.empty();
     }
     final Map<String, dynamic> data =
         json.decode(res.body) as Map<String, dynamic>;
     List<List> lista = List.from(data["values"]);
-    lista.removeAt(0);
-    return lista.reversed.toList();
+    if (removeFisrt) {
+      lista.removeAt(0);
+    }
+
+    if (reversed) return lista.reversed.toList();
+    return lista.toList();
   }
 
   Future<String> sendSheet(String sheetAndRange, List values,
@@ -94,14 +109,22 @@ class UserController extends GetxController {
   }
 
   void setUnidad(String? unidad_) {
-    unidad.value = unidad_ ?? "";
+    unidad.value = unidad_ ?? unidades.value[0];
   }
 
   Future<void> loadMetadata() async {
+    final data = await getSheet("Metadata!A:E",
+        majorDimension: MajorDimension.COLUMNS,
+        reversed: false,
+        removeFisrt: false);
+    serviciosProductosPagarCopy.value = data[0].sublist(1).cast();
+    unidades.value = data[1].sublist(1).cast();
+    serviciosProductosCobrarCopy.value = data[2].sublist(1).cast();
+    proveedores.value = data[3].sublist(1).cast();
+    clientes.value = data[4].sublist(1).cast();
 
-    serviciosProductosPagarCopy.value =
-        (await getSheet("Metadata!A:A")).map((e) => e[0] as String).toList();
-    servicioProductoPagar.value =
-        serviciosProductosPagarCopy.value[0];
+    servicioProductoPagar.value = serviciosProductosPagarCopy.value[0];
+    print(unidades.value);
+    unidad.value = unidades.value[0];
   }
 }

@@ -10,26 +10,17 @@ class Login extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Lacteos San Esteban")),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset("assets/san_esteban.jpg"),
-            GetBuilder<UserController>(
-                builder: (_) => _buildBody(controller.account))
-          ],
-        )),
-      ),
+      body: GetBuilder<UserController>(
+          builder: (_) => _buildBody(controller.account)),
     );
   }
 
   Widget _buildBody(GoogleSignInAccount? user) {
     if (user != null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      return ListView(
+        padding: const EdgeInsets.all(8.0),
         children: [
+          Image.asset("assets/san_esteban.jpg"),
           ElevatedButton(
               onPressed: () => Get.toNamed("/home"),
               child: const Text("Inicio")),
@@ -43,9 +34,10 @@ class Login extends GetView<UserController> {
         ],
       );
     }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return ListView(
+      padding: const EdgeInsets.all(8.0),
       children: [
+        Image.asset("assets/san_esteban.jpg"),
         const SizedBox(height: 10),
         const Text("Usted no ha iniciado session"),
         const SizedBox(height: 10),

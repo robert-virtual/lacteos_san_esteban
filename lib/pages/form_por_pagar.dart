@@ -55,36 +55,19 @@ class PorPagarForm extends GetView<UserController> {
                 Column(
                   children: [
                     const Text("Unidad de medida"),
-                    FutureBuilder<List<List>>(
-                      future: controller.getSheet("Metadata!B:B"),
-                      builder: (ctx, snap) {
-                        if (!snap.hasData) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (snap.hasError) {
-                          return const Text(
-                              "Ha ocurrido un error al cargar la informacion");
-                        }
-                        if (snap.isBlank == true) {
-                          return const Text("No hay datos que mostrar");
-                        }
-                        controller.unidad.value = snap.data![0][0];
-                        return Obx(
-                          () => DropdownButton<String>(
-                              underline: null,
-                              value: controller.unidad.value,
-                              items: snap.data!
-                                  .map(
-                                    (e) => DropdownMenuItem(
-                                      value: e[0] as String,
-                                      child: Text(e[0]),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: controller.setUnidad),
-                        );
-                      },
+                    Obx(
+                      () => DropdownButton<String>(
+                          underline: null,
+                          value: controller.unidad.value,
+                          items: controller.unidades.value
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Text(e),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: controller.setUnidad),
                     ),
                   ],
                 ),
@@ -107,16 +90,28 @@ class PorPagarForm extends GetView<UserController> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (snap.hasError) {
-                    return const Text(
-                        "Ha ocurrido un error al cargar la informacion");
+                    return Column(
+                      children: const [
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Text("Ha ocurrido un error al cargar la informacion"),
+                      ],
+                    );
                   }
-                  if (snap.isBlank == true) {
-                    return const Text("No hay datos que mostrar");
+                  if (snap.data!.isEmpty) {
+                    return Column(
+                      children: const [
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Text("No hay proveedores"),
+                      ],
+                    );
                   }
                   controller.unidad.value = snap.data![0][0];
                   return Obx(
                     () => DropdownButton<String>(
-                        underline: null,
                         value: controller.proveedor.value,
                         items: snap.data!
                             .map(
@@ -126,11 +121,47 @@ class PorPagarForm extends GetView<UserController> {
                               ),
                             )
                             .toList(),
-                        onChanged: (text){
-                            controller.proveedor.value = text ?? "";
+                        onChanged: (text) {
+                          controller.proveedor.value = text ?? "";
                         }),
                   );
                 }),
+            ElevatedButton(
+              onPressed: () {
+                Get.dialog(AlertDialog(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text("Hola"),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Cancelar")),
+                    TextButton(
+                        onPressed: () async {
+                          final res =
+                              await Get.showOverlay(asyncFunction: () async {
+                            controller.sendSheet(
+                                "Metadata!D:D", [controller.proveedor.value]);
+                            controller.proveedores.value =
+                                (await controller.getSheet("Metadata!D:D"))
+                                    .map((e) => e[0] as String)
+                                    .toList();
+                          });
+                          if (Get.context != null) {
+                            Navigator.pop(Get.context!);
+                          }
+                        },
+                        child: const Text("Guadar"))
+                  ],
+                ));
+              },
+              child: const Text("Agregar Proveedor"),
+            ),
             const SizedBox(height: 20),
             GetBuilder<UserController>(
               builder: (_) =>
@@ -143,6 +174,9 @@ class PorPagarForm extends GetView<UserController> {
         floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.send),
             onPressed: () async {
+              if (checkInputs()) {
+                return;
+              }
               final res = await Get.showOverlay(
                   loadingWidget:
                       const Center(child: CircularProgressIndicator()),
@@ -161,5 +195,14 @@ class PorPagarForm extends GetView<UserController> {
               Get.back();
               Get.snackbar("Guardar Datos", res);
             }));
+  }
+
+  bool checkInputs() {
+    if (controller.proveedor.value.isEmpty) {
+      Get.snackbar(
+          "No Se Puede Guardar Registro", "Debes Ingresar Un Proveedor");
+      return true;
+    }
+    return false;
   }
 }
