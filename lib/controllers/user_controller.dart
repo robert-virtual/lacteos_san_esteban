@@ -124,7 +124,7 @@ class UserController extends GetxController {
     clientes.value = data[4].sublist(1).cast();
 
     servicioProductoPagar.value = serviciosProductosPagarCopy.value[0];
-    print(unidades.value);
     unidad.value = unidades.value[0];
+    proveedor.value = proveedores.value[0];
   }
 }

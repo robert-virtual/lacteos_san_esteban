@@ -83,56 +83,35 @@ class PorPagarForm extends GetView<UserController> {
                 ),
               ),
             ),
-            FutureBuilder<List<List>>(
-                future: controller.getSheet("Metadata!D:D"),
-                builder: (ctx, snap) {
-                  if (!snap.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snap.hasError) {
-                    return Column(
-                      children: const [
-                        SizedBox(
-                          height: 10.0,
+            Obx(
+              () => DropdownButton<String>(
+                  value: controller.proveedor.value,
+                  items: controller.proveedores.value
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e),
                         ),
-                        Text("Ha ocurrido un error al cargar la informacion"),
-                      ],
-                    );
-                  }
-                  if (snap.data!.isEmpty) {
-                    return Column(
-                      children: const [
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Text("No hay proveedores"),
-                      ],
-                    );
-                  }
-                  controller.unidad.value = snap.data![0][0];
-                  return Obx(
-                    () => DropdownButton<String>(
-                        value: controller.proveedor.value,
-                        items: snap.data!
-                            .map(
-                              (e) => DropdownMenuItem(
-                                value: e[0] as String,
-                                child: Text(e[0]),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (text) {
-                          controller.proveedor.value = text ?? "";
-                        }),
-                  );
-                }),
+                      )
+                      .toList(),
+                  onChanged: (text) {
+                    controller.proveedor.value =
+                        text ?? controller.proveedores[0];
+                  }),
+            ),
             ElevatedButton(
               onPressed: () {
                 Get.dialog(AlertDialog(
+                  title: const Text("Agregar Proveedor"),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text("Hola"),
+                    children: [
+                      TextField(
+                        controller: proveedor,
+                        decoration: const InputDecoration(
+                          label: Text("Nombre de Proveedor"),
+                        ),
+                      )
                     ],
                   ),
                   actions: [
@@ -146,7 +125,8 @@ class PorPagarForm extends GetView<UserController> {
                           final res =
                               await Get.showOverlay(asyncFunction: () async {
                             controller.sendSheet(
-                                "Metadata!D:D", [controller.proveedor.value]);
+                                "Metadata!D${controller.proveedores.value.length + 2}",
+                                [proveedor.text]);
                             controller.proveedores.value =
                                 (await controller.getSheet("Metadata!D:D"))
                                     .map((e) => e[0] as String)
@@ -189,7 +169,7 @@ class PorPagarForm extends GetView<UserController> {
                             ? ""
                             : double.parse(cantidad.text),
                         cantidad.text.isEmpty ? "" : controller.unidad.value,
-                        proveedor.text,
+                        controller.proveedor.value,
                         double.parse(monto.text)
                       ]));
               Get.back();
