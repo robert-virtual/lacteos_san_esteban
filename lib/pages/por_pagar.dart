@@ -31,24 +31,42 @@ class PorPagar extends GetView<UserController> {
                       (i) => Obx(
                         () => ChoiceChip(
                           label: Row(
-                              children: [
-                                Text(searchArguments[i]),
-                                const Icon(Icons.expand_more)
-                              ],
-                            ),
+                            children: [
+                              Text(searchArguments[i]),
+                              const Icon(Icons.expand_more)
+                            ],
+                          ),
                           onSelected: (selected) {
                             controller.searchSelectedaArg.value =
                                 searchArguments[i];
-                                if (!selected) {
-                                  controller.searchSelectedaArg.value = "";
-                                }
+                            if (!selected) {
+                              controller.searchSelectedaArg.value = "";
+                            }
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
-                                /* if (!selected) { */
-                                /*   controller.serviciosProductosPagar.value = []; */
-                                /*   return; */
-                                /* } */
-                                buildShowModalBottomSheet(context);
+                                /* buildShowModalBottomSheet(context); */
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.serviciosProductosPagarCopy,
+                                  opciones: controller.serviciosProductosPagar,
+                                );
+                                break;
+                              case "Proveedor":
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.proveedoresCopy,
+                                  opciones: controller.proveedores,
+                                );
+                                break;
+                              case "Registrado por":
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.registradoresCopy,
+                                  opciones: controller.registradores,
+                                );
                                 break;
                               case "Fecha":
                                 showDatePicker(
@@ -90,9 +108,16 @@ class PorPagar extends GetView<UserController> {
             }
             return Obx(
               () {
+                print(
+                    "re dibujar proveedores: ${controller.proveedores} registradore:");
+                print(controller.registradores);
                 final items = snap.data!
                     .where(
-                      (e) => filterName(e[2]) && filterDate(e[1]),
+                      (e) =>
+                          filterName(e[2]) &&
+                          filterDate(e[1]) &&
+                          filterByProveedor(e[5]) &&
+                          filterByRegistrador(e[0]),
                     )
                     .toList();
 
@@ -161,7 +186,12 @@ class PorPagar extends GetView<UserController> {
     );
   }
 
-  Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
+  Future<dynamic> buildShowModalBottomSheet(
+    BuildContext context, {
+    title = "Servicio/Producto",
+    required RxList<String> datos,
+    required RxList<String> opciones,
+  }) {
     return showModalBottomSheet(
       context: context,
       builder: (context) => ListView(
@@ -170,7 +200,7 @@ class PorPagar extends GetView<UserController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Servicio/Producto"),
+              Text(title),
               ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -181,23 +211,19 @@ class PorPagar extends GetView<UserController> {
           Obx(
             () => Column(
               children: List.generate(
-                controller.serviciosProductosPagarCopy.value.length,
+                datos.value.length,
                 (idx) => CheckboxListTile(
-                  title:
-                      Text(controller.serviciosProductosPagarCopy.value[idx]),
+                  title: Text(datos.value[idx]),
                   controlAffinity: ListTileControlAffinity.leading,
-                  value: controller.serviciosProductosPagar.value.contains(
-                      controller.serviciosProductosPagarCopy.value[idx]),
+                  value: opciones.value.contains(datos.value[idx]),
                   onChanged: (value) {
                     if (value == true) {
-                      controller.serviciosProductosPagar.value = [
-                        ...controller.serviciosProductosPagar.value,
-                        controller.serviciosProductosPagarCopy.value[idx]
-                      ];
+                      opciones.value = [...opciones.value, datos.value[idx]];
                       return;
                     }
-                      controller.serviciosProductosPagar.value = controller.serviciosProductosPagar.value.where((e) => e != controller.serviciosProductosPagarCopy.value[idx]).toList();
-
+                    opciones.value = opciones.value
+                        .where((e) => e != datos.value[idx])
+                        .toList();
                   },
                 ),
               ),
@@ -214,6 +240,24 @@ class PorPagar extends GetView<UserController> {
         const Duration(days: 1),
       ),
     );
+  }
+
+  bool filterByRegistrador(String registrador) {
+    if (controller.registradores.value.isEmpty) {
+      return controller.registradoresCopy.value.contains(registrador);
+    }
+    return controller.registradores.value.contains(registrador);
+  }
+
+  bool filterByProveedor(String proveedor) {
+    if (controller.proveedores.value.isEmpty) {
+      final res = controller.proveedoresCopy.value.contains(proveedor);
+      print("empty - $res");
+      return res;
+    }
+    final res = controller.proveedores.value.contains(proveedor);
+    print("not empty - $res");
+    return res;
   }
 
   bool filterName(String servicioProducto) {

@@ -59,7 +59,7 @@ class PorPagarForm extends GetView<UserController> {
                       () => DropdownButton<String>(
                           underline: null,
                           value: controller.unidad.value,
-                          items: controller.unidades.value
+                          items: controller.unidadesCopy.value
                               .map(
                                 (e) => DropdownMenuItem(
                                   value: e,
@@ -86,7 +86,7 @@ class PorPagarForm extends GetView<UserController> {
             Obx(
               () => DropdownButton<String>(
                   value: controller.proveedor.value,
-                  items: controller.proveedores.value
+                  items: controller.proveedoresCopy.value
                       .map(
                         (e) => DropdownMenuItem(
                           value: e,
@@ -96,7 +96,7 @@ class PorPagarForm extends GetView<UserController> {
                       .toList(),
                   onChanged: (text) {
                     controller.proveedor.value =
-                        text ?? controller.proveedores[0];
+                        text ?? controller.proveedoresCopy[0];
                   }),
             ),
             ElevatedButton(
@@ -122,21 +122,16 @@ class PorPagarForm extends GetView<UserController> {
                         child: const Text("Cancelar")),
                     TextButton(
                         onPressed: () async {
-                          final res =
-                              await Get.showOverlay(asyncFunction: () async {
-                            controller.sendSheet(
-                                "Metadata!D${controller.proveedores.value.length + 2}",
-                                [proveedor.text]);
-                            controller.proveedores.value =
-                                (await controller.getSheet("Metadata!D:D"))
-                                    .map((e) => e[0] as String)
-                                    .toList();
-                          });
+                          controller.proveedoresCopy.value = [
+                            ...controller.proveedoresCopy.value,
+                            proveedor.text
+                          ];
+                          controller.proveedor.value = proveedor.text;
                           if (Get.context != null) {
                             Navigator.pop(Get.context!);
                           }
                         },
-                        child: const Text("Guadar"))
+                        child: const Text("Guardar"))
                   ],
                 ));
               },
@@ -158,20 +153,27 @@ class PorPagarForm extends GetView<UserController> {
                 return;
               }
               final res = await Get.showOverlay(
-                  loadingWidget:
-                      const Center(child: CircularProgressIndicator()),
-                  asyncFunction: () async =>
-                      await controller.sendSheet("CuentasPorPagar!A:G", [
-                        controller.account!.displayName,
-                        f2.format(DateTime.now()),
-                        controller.servicioProductoPagar.value,
-                        cantidad.text.isEmpty
-                            ? ""
-                            : double.parse(cantidad.text),
-                        cantidad.text.isEmpty ? "" : controller.unidad.value,
-                        controller.proveedor.value,
-                        double.parse(monto.text)
-                      ]));
+                loadingWidget: const Center(child: CircularProgressIndicator()),
+                asyncFunction: () async {
+                  //guadra cuenta por pagar
+                  await controller.sendSheet(
+                    "CuentasPorPagar!A:G",
+                    [
+                      controller.account!.displayName,
+                      f2.format(DateTime.now()),
+                      controller.servicioProductoPagar.value,
+                      cantidad.text.isEmpty ? "" : double.parse(cantidad.text),
+                      cantidad.text.isEmpty ? "" : controller.unidad.value,
+                      controller.proveedor.value,
+                      double.parse(monto.text)
+                    ],
+                  );
+                  // guardar proveedor
+                  await controller.sendSheet(
+                      "Metadata!D${controller.proveedoresCopy.value.length + 1}",
+                      [proveedor.text]);
+                },
+              );
               Get.back();
               Get.snackbar("Guardar Datos", res);
             }));

@@ -102,25 +102,6 @@ class PorCobrar extends GetView<UserController> {
                 ],
               ),
             )),
-        actions: [
-          IconButton(
-              onPressed: () {
-                controller.searching.value = !controller.searching.value;
-              },
-              icon: const Icon(Icons.search)),
-          IconButton(
-            onPressed: () {
-              showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2022),
-                  lastDate: DateTime(DateTime.now().year + 5));
-            },
-            icon: const Icon(
-              Icons.date_range,
-            ),
-          )
-        ],
       ),
       body: FutureBuilder<List<List>>(
           future: controller.getSheet("CuentasPorPagar!A:G"),

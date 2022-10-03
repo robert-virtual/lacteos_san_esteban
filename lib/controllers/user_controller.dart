@@ -22,20 +22,25 @@ class UserController extends GetxController {
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
   var tipoQueso = "Queso semi seco".obs;
   var fechaFiltro = DateTime.now().obs;
+
   var unidad = "".obs;
-  var unidades = [""].obs;
+  var unidades = List<String>.empty().obs;
+  var unidadesCopy = [""].obs;
 
   var proveedor = "".obs;
-  var proveedores = [""].obs;
+  var proveedores = List<String>.empty().obs;
+  var proveedoresCopy = [""].obs;
 
   var cliente = "".obs;
-  var clientes = [""].obs;
+  var clientes = List<String>.empty().obs;
+  var clientesCopy = [""].obs;
 
-  var searching = false.obs;
-  var search = "".obs;
+  var registradoPor = "".obs;
+  var registradores = List<String>.empty().obs;
+  var registradoresCopy = [""].obs;
 
   var servicioProductoPagar = "".obs;
-  var serviciosProductosPagar = [].obs;
+  var serviciosProductosPagar = List<String>.empty().obs;
   var serviciosProductosPagarCopy = [""].obs;
 
   var servicioProductoCobrar = "".obs;
@@ -109,22 +114,24 @@ class UserController extends GetxController {
   }
 
   void setUnidad(String? unidad_) {
-    unidad.value = unidad_ ?? unidades.value[0];
+    unidad.value = unidad_ ?? unidadesCopy.value[0];
   }
 
   Future<void> loadMetadata() async {
-    final data = await getSheet("Metadata!A:E",
+    final data = await getSheet("Metadata!A:F",
         majorDimension: MajorDimension.COLUMNS,
         reversed: false,
         removeFisrt: false);
     serviciosProductosPagarCopy.value = data[0].sublist(1).cast();
-    unidades.value = data[1].sublist(1).cast();
+    unidadesCopy.value = data[1].sublist(1).cast();
     serviciosProductosCobrarCopy.value = data[2].sublist(1).cast();
-    proveedores.value = data[3].sublist(1).cast();
-    clientes.value = data[4].sublist(1).cast();
+    proveedoresCopy.value = data[3].sublist(1).cast();
+    clientesCopy.value = data[4].sublist(1).cast();
+    registradoresCopy.value = data[5].sublist(1).cast();
 
     servicioProductoPagar.value = serviciosProductosPagarCopy.value[0];
-    unidad.value = unidades.value[0];
-    proveedor.value = proveedores.value[0];
+    unidad.value = unidadesCopy.value[0];
+    proveedor.value = proveedoresCopy.value[0];
+    registradoPor.value = registradoresCopy.value[0];
   }
 }

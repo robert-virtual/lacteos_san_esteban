@@ -22,18 +22,7 @@ class Queso extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(
-          () => controller.searching.value
-              ? TextField(
-                  focusNode: searchFocus,
-                  onChanged: (text) {
-                    controller.search.value = text;
-                  },
-                  decoration: const InputDecoration(
-                      border: null, hintText: "Buscar..."),
-                )
-              : const Text("Queso"),
-        ),
+        title: const Text("Queso"),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -74,7 +63,8 @@ class Queso extends GetView<UserController> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  const Text("Servicio/Producto"),
+                                                  const Text(
+                                                      "Servicio/Producto"),
                                                   TextButton(
                                                       onPressed: () {},
                                                       child:
@@ -83,7 +73,9 @@ class Queso extends GetView<UserController> {
                                               ),
                                               Row(
                                                 children: [
-                                                  Checkbox(value: false, onChanged: (value){}),
+                                                  Checkbox(
+                                                      value: false,
+                                                      onChanged: (value) {}),
                                                   const Text(""),
                                                 ],
                                               )
@@ -114,31 +106,6 @@ class Queso extends GetView<UserController> {
                 ],
               ),
             )),
-        actions: [
-          IconButton(
-              onPressed: () {
-                controller.searching.value = !controller.searching.value;
-                searchFocus.requestFocus();
-              },
-              icon: const Icon(Icons.search)),
-          IconButton(
-            onPressed: () {
-              showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2022),
-                lastDate: DateTime(DateTime.now().year + 5),
-              ).then((x) {
-                controller.fechaFiltro.value = x ?? DateTime.now();
-                Get.snackbar(
-                    "Fecha ", fDate.format(controller.fechaFiltro.value));
-              });
-            },
-            icon: const Icon(
-              Icons.date_range,
-            ),
-          )
-        ],
       ),
       body: FutureBuilder<List<List>>(
           future: controller.getSheet("Queso!A:K"),
