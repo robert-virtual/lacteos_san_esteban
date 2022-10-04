@@ -20,7 +20,7 @@ class UserController extends GetxController {
   ]);
   final spreadsheetId = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ";
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
-  var tipoQueso = "Queso semi seco".obs;
+  var tipoQueso = "".obs;
   var fechaFiltro = DateTime.now().obs;
 
   var unidad = "".obs;
@@ -133,6 +133,7 @@ class UserController extends GetxController {
     productoCobrar.value = productosCobrarCopy.value[0];
 
     unidad.value = unidadesCopy.value[0];
+    tipoQueso.value = productosCobrarCopy.value.where((e) =>e.startsWith("Queso")).first;
     proveedor.value = proveedoresCopy.value[0];
     cliente.value = clientesCopy.value[0];
     registradoPor.value = registradoresCopy.value[0];

@@ -14,13 +14,6 @@ class QuesoForm extends GetView<UserController> {
   final chileJalapeno = TextEditingController(text: "0");
   final chileBolson = TextEditingController(text: "0");
   final libras = TextEditingController();
-  List<String> quesos = [
-    "Queso semi seco",
-    "Queso crema",
-    "Queso fresco",
-    "Queso con chile",
-    "Queso frijolero",
-  ];
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   @override
   Widget build(BuildContext context) {
@@ -99,13 +92,13 @@ class QuesoForm extends GetView<UserController> {
             Obx(() => DropdownButton<String>(
                 hint: const Text("Tipo de Queso"),
                 value: controller.tipoQueso.value,
-                items: quesos
+                items:controller.productosCobrarCopy.where((prod) =>prod.startsWith("Queso") ) 
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                     .toList(),
                 onChanged: controller.setQueso)),
             Obx(
               () => Visibility(
-                  visible: controller.tipoQueso.value == "Queso con chile",
+                  visible: controller.tipoQueso.value == "Queso Con Chile",
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
