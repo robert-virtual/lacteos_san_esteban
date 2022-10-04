@@ -47,7 +47,7 @@ class PorCobrarForm extends GetView<UserController> {
                     controller: cantidad,
                     decoration: const InputDecoration(
                       label: Text(
-                        "Cantidad (Litros)",
+                        "Cantidad (Libras)",
                       ),
                     ),
                   ),
@@ -135,6 +135,7 @@ class PorCobrarForm extends GetView<UserController> {
               if (checkInputs()) {
                 return;
               }
+              print(f2.format(DateTime.now()));
               final res = await Get.showOverlay(
                 loadingWidget: const Center(child: CircularProgressIndicator()),
                 asyncFunction: () async {

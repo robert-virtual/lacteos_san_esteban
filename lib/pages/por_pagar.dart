@@ -6,6 +6,8 @@ import 'package:lateos_san_esteban/controllers/user_controller.dart';
 class PorPagar extends GetView<UserController> {
   PorPagar({Key? key}) : super(key: key);
   final f = DateFormat("dd/MM/yyyy hh:mm a");
+  final nf =
+      NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
     "Servicio/Producto",
     "Monto",
@@ -17,7 +19,10 @@ class PorPagar extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cuentas por Pagar"),
+        title: Obx(
+          () =>
+              Text("Egresos del mes (${nf.format(controller.egresos.value)})"),
+        ),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -92,88 +97,100 @@ class PorPagar extends GetView<UserController> {
               ),
             )),
       ),
-      body: FutureBuilder<List<List>>(
-          future: controller.getSheet("CuentasPorPagar!A:G"),
-          builder: (ctx, snap) {
-            if (!snap.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snap.hasError) {
-              return const Center(
-                child: Text("Ha ocurrido un error al cargar la informacion"),
-              );
-            }
-            if (snap.isBlank == true) {
-              return const Center(child: Text("No hay datos que mostrar"));
-            }
-            return Obx(
-              () {
-                final items = snap.data!
-                    .where(
-                      (e) =>
-                          filterName(e[2]) &&
-                          filterDate(e[1]) &&
-                          filterByProveedor(e[5]) &&
-                          filterByRegistrador(e[0]),
-                    )
-                    .toList();
+      body: FutureBuilder<List<List>>(future: () {
+        final data = controller.getSheet("CuentasPorPagar!A:G");
+        data.then((value) {
+          controller.cuentasPagar.value = value;
+          controller.egresos.value = controller.cuentasPagar
+              .where(
+                  (cp) => DateTime.parse(cp[1]).month == DateTime.now().month)
+              .map((e) => double.parse(e[6]))
+              .reduce((value, element) => value + element);
+        });
+        return data;
+      }(), builder: (ctx, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snap.hasError) {
+          return const Center(
+            child: Text(
+              "Ha ocurrido un error al cargar la informacion",
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+        if (!snap.hasData) {
+          return const Center(child: Text("No hay datos que mostrar"));
+        }
+        return Obx(
+          () {
+            final items = snap.data!
+                .where(
+                  (e) =>
+                      filterName(e[2]) &&
+                      filterDate(e[1]) &&
+                      filterByProveedor(e[5]) &&
+                      filterByRegistrador(e[0]),
+                )
+                .toList();
 
-                return ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (ctx, idx) {
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Card(
-                          margin: const EdgeInsets.all(12.0),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Lps. ${items[idx][6]} | ${items[idx][2]}",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "${items[idx][2]} ${items[idx][3]} ${items[idx][4]}",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Registrado por ${items[idx][0]} ",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Proveedor: ${items[idx][5]}",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  f.format(DateTime.parse(items[idx][1])),
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(color: Colors.black54),
-                                )
-                              ],
+            return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (ctx, idx) {
+                  return Card(
+                    margin: const EdgeInsets.all(12.0),
+                    child: InkWell(
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Lps. ${items[idx][6]} | ${items[idx][2]}",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(fontSize: 20),
                             ),
-                          ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              "${items[idx][2]} ${items[idx][3]} ${items[idx][4]}",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                color: Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              "Registrado por ${items[idx][0]} ",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                color: Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              "Proveedor: ${items[idx][5]}",
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                color: Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              f.format(DateTime.parse(items[idx][1])),
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(color: Colors.black54),
+                            )
+                          ],
                         ),
-                      );
-                    });
-              },
-            );
-          }),
+                      ),
+                    ),
+                  );
+                });
+          },
+        );
+      }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.toNamed("/form_por_pagar");

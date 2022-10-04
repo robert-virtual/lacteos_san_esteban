@@ -23,6 +23,11 @@ class UserController extends GetxController {
   var tipoQueso = "".obs;
   var fechaFiltro = DateTime.now().obs;
 
+  var cuentasCobrar = List<List>.empty().obs;
+  var egresos = 0.0.obs;
+  var ingresos = 0.0.obs;
+  var cuentasPagar = List<List>.empty().obs;
+
   var unidad = "".obs;
   var unidades = List<String>.empty().obs;
   var unidadesCopy = [""].obs;
@@ -133,7 +138,8 @@ class UserController extends GetxController {
     productoCobrar.value = productosCobrarCopy.value[0];
 
     unidad.value = unidadesCopy.value[0];
-    tipoQueso.value = productosCobrarCopy.value.where((e) =>e.startsWith("Queso")).first;
+    tipoQueso.value =
+        productosCobrarCopy.value.where((e) => e.startsWith("Queso")).first;
     proveedor.value = proveedoresCopy.value[0];
     cliente.value = clientesCopy.value[0];
     registradoPor.value = registradoresCopy.value[0];

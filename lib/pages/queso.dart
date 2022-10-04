@@ -110,15 +110,18 @@ class Queso extends GetView<UserController> {
       body: FutureBuilder<List<List>>(
           future: controller.getSheet("Queso!A:K"),
           builder: (ctx, snap) {
-            if (!snap.hasData) {
+            if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
             if (snap.hasError) {
               return const Center(
-                child: Text("Ha ocurrido un error al cargar la informacion"),
+                child: Text(
+                  "Ha ocurrido un error al cargar la informacion",
+                  textAlign: TextAlign.center,
+                ),
               );
             }
-            if (snap.isBlank == true) {
+            if (!snap.hasData) {
               return const Center(child: Text("No hay datos que mostrar"));
             }
             return Obx(
@@ -131,10 +134,10 @@ class Queso extends GetView<UserController> {
                 return ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (ctx, idx) {
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Card(
-                          margin: const EdgeInsets.all(12.0),
+                      return Card(
+                        margin: const EdgeInsets.all(12.0),
+                        child: InkWell(
+                          onTap: () {},
                           child: Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Column(
