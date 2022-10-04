@@ -9,6 +9,7 @@ class PorPagar extends GetView<UserController> {
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   final f2 = DateFormat("yyyy MMM");
   final f3 = DateFormat("yyyyMM");
+  final monto = TextEditingController();
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
@@ -49,13 +50,53 @@ class PorPagar extends GetView<UserController> {
                             }
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
-                                /* buildShowModalBottomSheet(context); */
                                 buildShowModalBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.serviciosProductosPagarCopy,
                                   opciones: controller.serviciosProductosPagar,
                                 );
+                                break;
+                              case "Monto":
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (ctx) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                const Text("Monto"),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child:
+                                                        const Text("Aplicar"))
+                                              ],
+                                            ),
+                                            TextField(
+                                              controller: monto,
+                                              onChanged: (value) {
+                                                controller.monto.value =
+                                                    double.parse(value.isEmpty
+                                                        ? "0"
+                                                        : value);
+                                              },
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: const InputDecoration(
+                                                  label: Text("Monto")),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    });
                                 break;
                               case "Proveedor":
                                 buildShowModalBottomSheet(
@@ -122,6 +163,7 @@ class PorPagar extends GetView<UserController> {
                           filterName(e[2]) &&
                           filterDate(e[1]) &&
                           filterByProveedor(e[5]) &&
+                          filterByMonto(e[6]) &&
                           filterByRegistrador(e[0]),
                     )
                     .toList();
@@ -291,5 +333,12 @@ class PorPagar extends GetView<UserController> {
           .contains(servicioProducto);
     }
     return controller.serviciosProductosPagar.value.contains(servicioProducto);
+  }
+
+  bool filterByMonto(String monto) {
+    if (controller.monto.value == 0) {
+      return true;
+    }
+    return double.parse(monto) == controller.monto.value;
   }
 }

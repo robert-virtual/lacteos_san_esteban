@@ -25,6 +25,7 @@ class UserController extends GetxController {
   var tiposQueso = List<String>.empty().obs;
   var tiposQuesoCopy = [""].obs;
 
+  var monto = 0.0.obs;
   var fechaFiltro = DateTime.now().obs;
 
   var unidad = "".obs;
