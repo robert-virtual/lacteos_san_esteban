@@ -9,7 +9,7 @@ class PorPagar extends GetView<UserController> {
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   final f2 = DateFormat("yyyy MMM");
   final f3 = DateFormat("yyyyMM");
-  final monto = TextEditingController();
+  final monto = TextEditingController(text: "0");
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
@@ -50,7 +50,7 @@ class PorPagar extends GetView<UserController> {
                             }
                             switch (searchArguments[i]) {
                               case "Servicio/Producto":
-                                buildShowModalBottomSheet(
+                                buildBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.serviciosProductosPagarCopy,
@@ -58,48 +58,10 @@ class PorPagar extends GetView<UserController> {
                                 );
                                 break;
                               case "Monto":
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (ctx) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text("Monto"),
-                                                ElevatedButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    child:
-                                                        const Text("Aplicar"))
-                                              ],
-                                            ),
-                                            TextField(
-                                              controller: monto,
-                                              onChanged: (value) {
-                                                controller.monto.value =
-                                                    double.parse(value.isEmpty
-                                                        ? "0"
-                                                        : value);
-                                              },
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              decoration: const InputDecoration(
-                                                  label: Text("Monto")),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    });
+                                buildShowModalBottomSheet(context);
                                 break;
                               case "Proveedor":
-                                buildShowModalBottomSheet(
+                                buildBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.proveedoresCopy,
@@ -107,7 +69,7 @@ class PorPagar extends GetView<UserController> {
                                 );
                                 break;
                               case "Registrado por":
-                                buildShowModalBottomSheet(
+                                buildBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.registradoresCopy,
@@ -257,7 +219,41 @@ class PorPagar extends GetView<UserController> {
     );
   }
 
-  Future<dynamic> buildShowModalBottomSheet(
+  Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (ctx) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Monto"),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Aplicar"))
+                  ],
+                ),
+                TextField(
+                  controller: monto,
+                  onChanged: (value) {
+                    controller.monto.value =
+                        double.parse(value.isEmpty ? "0" : value);
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(label: Text("Monto")),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<dynamic> buildBottomSheet(
     BuildContext context, {
     title = "Servicio/Producto",
     required RxList<String> datos,

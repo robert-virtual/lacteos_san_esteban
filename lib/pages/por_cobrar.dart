@@ -9,11 +9,11 @@ class PorCobrar extends GetView<UserController> {
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   final f2 = DateFormat("yyyy MMM");
   final f3 = DateFormat("yyyyMM");
+  final monto = TextEditingController(text: "0");
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
     "Producto",
-    "Cantidad",
     "Monto",
     "Cliente",
     "Registrado por",
@@ -51,15 +51,19 @@ class PorCobrar extends GetView<UserController> {
                             switch (searchArguments[i]) {
                               case "Producto":
                                 /* buildShowModalBottomSheet(context); */
-                                buildShowModalBottomSheet(
+                                buildBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.productosCobrarCopy,
                                   opciones: controller.productosCobrar,
                                 );
                                 break;
+                              case "Monto":
+                                showAmoutBottomSheet(context,
+                                    target: controller.montoCobrar);
+                                break;
                               case "Cliente":
-                                buildShowModalBottomSheet(
+                                buildBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.clientesCopy,
@@ -67,7 +71,7 @@ class PorCobrar extends GetView<UserController> {
                                 );
                                 break;
                               case "Registrado por":
-                                buildShowModalBottomSheet(
+                                buildBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.registradoresCopy,
@@ -120,10 +124,11 @@ class PorCobrar extends GetView<UserController> {
                 final items = snap.data!
                     .where(
                       (e) =>
-                          filterName(e[2]) &&
+                          filterByRegistrador(e[0]) &&
                           filterDate(e[1]) &&
+                          filterName(e[2]) &&
                           filterByCliente(e[4]) &&
-                          filterByRegistrador(e[0]),
+                          filterByMonto(e[5]),
                     )
                     .toList();
 
@@ -216,7 +221,41 @@ class PorCobrar extends GetView<UserController> {
     );
   }
 
-  Future<dynamic> buildShowModalBottomSheet(
+  Future<dynamic> showAmoutBottomSheet(BuildContext context,
+      {String title = "Monto", required RxDouble target}) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (ctx) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Aplicar"))
+                  ],
+                ),
+                TextField(
+                  controller: monto,
+                  onChanged: (value) {
+                    target.value = double.parse(value.isEmpty ? "0" : value);
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(label: Text(title)),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<dynamic> buildBottomSheet(
     BuildContext context, {
     title = "Servicio/Producto",
     required RxList<String> datos,
@@ -291,5 +330,12 @@ class PorCobrar extends GetView<UserController> {
       return controller.productosCobrarCopy.value.contains(producto);
     }
     return controller.productosCobrar.value.contains(producto);
+  }
+
+  bool filterByMonto(String monto) {
+    if (controller.montoCobrar.value == 0) {
+      return true;
+    }
+    return double.parse(monto) == controller.montoCobrar.value;
   }
 }
