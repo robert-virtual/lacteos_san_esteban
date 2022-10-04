@@ -7,7 +7,8 @@ import 'package:lateos_san_esteban/controllers/user_controller.dart';
 class PorPagar extends GetView<UserController> {
   PorPagar({Key? key}) : super(key: key);
   final f = DateFormat("dd/MM/yyyy hh:mm a");
-  final f2 = DateFormat("MMM");
+  final f2 = DateFormat("yyyy MMM");
+  final f3 = DateFormat("yyyyMM");
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
@@ -125,24 +126,32 @@ class PorPagar extends GetView<UserController> {
                     )
                     .toList();
 
-                return GroupedListView<List<dynamic>, int>(
+                return GroupedListView<List<dynamic>, String>(
                     elements: items,
-                    groupBy: (List e) => DateTime.parse(e[1]).month,
+                    groupBy: (List e) => f3.format(DateTime.parse(e[1])),
+                    groupComparator: (v1, v2) =>
+                        int.parse(v1).compareTo(int.parse(v2)),
                     order: GroupedListOrder.DESC,
+                    itemComparator: (e1, e2) =>
+                        DateTime.parse(e1[1]).compareTo(DateTime.parse(e2[1])),
                     useStickyGroupSeparators: true,
-                    groupSeparatorBuilder: (value) => Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            "${f2.format(DateTime(0, value))} (${nf.format(
-                              items
-                                  .where((cp) =>
-                                      DateTime.parse(cp[1]).month == value)
-                                  .map((e) => double.parse(e[6]))
-                                  .reduce((value, element) => value + element),
-                            )})",
-                          ),
+                    groupSeparatorBuilder: (value) {
+                      final month = int.parse(value.substring(4));
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${nf.format(
+                            items
+                                .where((cp) =>
+                                    DateTime.parse(cp[1]).month == month)
+                                .map((e) => double.parse(e[6]))
+                                .reduce((v, element) => v + element),
+                          )})",
+                          textAlign: TextAlign.center,
                         ),
+                      );
+                    },
                     itemBuilder: (ctx, pago) {
                       return Card(
                         margin: const EdgeInsets.all(12.0),

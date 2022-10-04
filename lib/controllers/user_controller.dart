@@ -20,12 +20,12 @@ class UserController extends GetxController {
   ]);
   final spreadsheetId = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ";
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
-  var tipoQueso = "".obs;
-  var fechaFiltro = DateTime.now().obs;
 
-  var cuentasCobrar = List<List>.empty().obs;
-  var ingresos = 0.0.obs;
-  var cuentasPagar = List<List>.empty().obs;
+  var tipoQueso = "".obs;
+  var tiposQueso = List<String>.empty().obs;
+  var tiposQuesoCopy = [""].obs;
+
+  var fechaFiltro = DateTime.now().obs;
 
   var unidad = "".obs;
   var unidades = List<String>.empty().obs;

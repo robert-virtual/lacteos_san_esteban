@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
 class PorCobrar extends GetView<UserController> {
   PorCobrar({Key? key}) : super(key: key);
   final f = DateFormat("dd/MM/yyyy hh:mm a");
+  final f2 = DateFormat("yyyy MMM");
+  final f3 = DateFormat("yyyyMM");
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
@@ -20,8 +23,7 @@ class PorCobrar extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() =>
-            Text("Ingresos del mes (${nf.format(controller.ingresos.value)})")),
+        title: const Text("Ingresos"),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -96,100 +98,115 @@ class PorCobrar extends GetView<UserController> {
               ),
             )),
       ),
-      body: FutureBuilder<List<List>>(future: () {
-        final data = controller.getSheet("CuentasPorCobrar!A:F");
-        data.then((value) {
-          controller.cuentasCobrar.value = value;
-          controller.ingresos.value = controller.cuentasCobrar
-              .where(
-                  (cc) => DateTime.parse(cc[1]).month == DateTime.now().month)
-              .map((e) => double.parse(e[5]))
-              .reduce((value, element) => value + element);
-        });
-        return data;
-      }(), builder: (ctx, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snap.hasError) {
-          return const Center(
-            child: Text(
-              "Ha ocurrido un error al cargar la informacion",
-              textAlign: TextAlign.center,
-            ),
-          );
-        }
-        if (!snap.hasData) {
-          return const Center(child: Text("No hay datos que mostrar"));
-        }
-        return Obx(
-          () {
-            final items = snap.data!
-                .where(
-                  (e) =>
-                      filterName(e[2]) &&
-                      filterDate(e[1]) &&
-                      filterByCliente(e[4]) &&
-                      filterByRegistrador(e[0]),
-                )
-                .toList();
+      body: FutureBuilder<List<List>>(
+          future: controller.getSheet("CuentasPorCobrar!A:F"),
+          builder: (ctx, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snap.hasError) {
+              return const Center(
+                child: Text(
+                  "Ha ocurrido un error al cargar la informacion",
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+            if (!snap.hasData) {
+              return const Center(child: Text("No hay datos que mostrar"));
+            }
+            return Obx(
+              () {
+                final items = snap.data!
+                    .where(
+                      (e) =>
+                          filterName(e[2]) &&
+                          filterDate(e[1]) &&
+                          filterByCliente(e[4]) &&
+                          filterByRegistrador(e[0]),
+                    )
+                    .toList();
 
-            return ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (ctx, idx) {
-                  return Card(
-                    margin: const EdgeInsets.all(12.0),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Lps. ${items[idx][5]} | ${items[idx][2]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "${items[idx][3]} Libras de ${items[idx][2]} ",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "Registrado por ${items[idx][0]} ",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "Cliente: ${items[idx][4]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              f.format(DateTime.parse(items[idx][1])),
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(color: Colors.black54),
-                            )
-                          ],
+                return GroupedListView<List<dynamic>, String>(
+                    elements: items,
+                    groupBy: (List e) => f3.format(DateTime.parse(e[1])),
+                    groupComparator: (v1, v2) =>
+                        int.parse(v1).compareTo(int.parse(v2)),
+                    order: GroupedListOrder.DESC,
+                    useStickyGroupSeparators: true,
+                    itemComparator: (e1, e2) =>
+                        DateTime.parse(e1[1]).compareTo(DateTime.parse(e2[1])),
+                    groupSeparatorBuilder: (value) {
+                      final month = int.parse(value.substring(4));
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${nf.format(
+                            items
+                                .where((cp) =>
+                                    DateTime.parse(cp[1]).month == month)
+                                .map((e) => double.parse(e[5]))
+                                .reduce((v, element) => v + element),
+                          )})",
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ),
-                  );
-                });
-          },
-        );
-      }),
+                      );
+                    },
+                    itemBuilder: (ctx, cobro) {
+                      return Card(
+                        margin: const EdgeInsets.all(12.0),
+                        child: InkWell(
+                          onTap: () {},
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Lps. ${cobro[5]} | ${cobro[2]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "${cobro[3]} Libras de ${cobro[2]} ",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Registrado por ${cobro[0]} ",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Cliente: ${cobro[4]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  f.format(DateTime.parse(cobro[1])),
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(color: Colors.black54),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    });
+              },
+            );
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.toNamed("/form_por_cobrar");

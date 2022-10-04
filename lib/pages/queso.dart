@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
 class Queso extends GetView<UserController> {
   final f = DateFormat("dd/MM/yyyy hh:mm a");
+  final f2 = DateFormat("yyyy MMM");
+  final nf =
+      NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
+  final f3 = DateFormat("yyyyMM");
   final fDate = DateFormat("dd/MM/yyyy");
   final searchFocus = FocusNode();
   final textGray = const TextStyle(
@@ -35,53 +40,43 @@ class Queso extends GetView<UserController> {
                       searchArguments.length,
                       (i) => Obx(
                         () => ChoiceChip(
-                          label: Obx(
-                            () => Row(
-                              children: [
-                                Text(searchArguments[i]),
-                                Icon(controller.searchSelectedaArg.value ==
-                                        searchArguments[i]
-                                    ? Icons.close
-                                    : Icons.expand_more)
-                              ],
-                            ),
+                          label: Row(
+                            children: [
+                              Text(searchArguments[i]),
+                              const Icon(Icons.expand_more)
+                            ],
                           ),
                           onSelected: (selected) {
-                            if (!selected) {
-                              controller.searchSelectedaArg.value = "";
-                              return;
-                            }
                             controller.searchSelectedaArg.value =
                                 searchArguments[i];
+                            if (!selected) {
+                              controller.searchSelectedaArg.value = "";
+                            }
                             switch (searchArguments[i]) {
-                              case "Servicio/Producto":
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Text(
-                                                      "Servicio/Producto"),
-                                                  TextButton(
-                                                      onPressed: () {},
-                                                      child:
-                                                          const Text("Aplicar"))
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Checkbox(
-                                                      value: false,
-                                                      onChanged: (value) {}),
-                                                  const Text(""),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ));
+                              case "Tipo de queso":
+                                /* buildShowModalBottomSheet(context); */
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.productosCobrarCopy,
+                                  opciones: controller.productosCobrar,
+                                );
+                                break;
+                              case "Libras Producidas":
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.clientesCopy,
+                                  opciones: controller.clientes,
+                                );
+                                break;
+                              case "Registrado por":
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.registradoresCopy,
+                                  opciones: controller.registradores,
+                                );
                                 break;
                               case "Fecha":
                                 showDatePicker(
@@ -127,13 +122,29 @@ class Queso extends GetView<UserController> {
             return Obx(
               () {
                 final items = snap.data!
-                    .where((e) => DateTime.parse(e[1]).isBefore(controller
-                        .fechaFiltro.value
-                        .add(const Duration(days: 1))))
+                    .where((e) => filterDate(e[1]) && filterName(e[3]))
                     .toList();
-                return ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (ctx, idx) {
+                return GroupedListView<List, String>(
+                    elements: items,
+                    groupBy: (List e) => f3.format(DateTime.parse(e[1])),
+                    groupComparator: (v1, v2) =>
+                        int.parse(v1).compareTo(int.parse(v2)),
+                    order: GroupedListOrder.DESC,
+                    useStickyGroupSeparators: true,
+                    itemComparator: (e1, e2) =>
+                        DateTime.parse(e1[1]).compareTo(DateTime.parse(e2[1])),
+                    groupSeparatorBuilder: (value) {
+                      final month = int.parse(value.substring(4));
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${items.where((cp) => DateTime.parse(cp[1]).month == month).map((e) => double.parse(e[2])).reduce((v, element) => v + element)} Libras)",
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
+                    itemBuilder: (ctx, item) {
                       return Card(
                         margin: const EdgeInsets.all(12.0),
                         child: InkWell(
@@ -144,63 +155,63 @@ class Queso extends GetView<UserController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${items[idx][3]} | ${items[idx][2]} lbs producidas",
+                                  "${item[3]} | ${item[2]} lbs producidas",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(fontSize: 20),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Leche Entera usada: ${items[idx][4]} lts ",
+                                  "Leche Entera usada: ${item[4]} lts ",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                       fontSize: 15, color: Colors.black54),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Leche Descremada usada: ${items[idx][5]} lts ",
+                                  "Leche Descremada usada: ${item[5]} lts ",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                       fontSize: 15, color: Colors.black54),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Tipo de Queso: ${items[idx][3]}",
+                                  "Tipo de Queso: ${item[3]}",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Sal: ${items[idx][6]}",
+                                  "Sal: ${item[6]}",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Cuajo: ${items[idx][7]}",
+                                  "Cuajo: ${item[7]}",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Suero para Cuajar: ${items[idx][8]} lts",
+                                  "Suero para Cuajar: ${item[8]} lts",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 Visibility(
-                                    visible: items[idx][3] == "Queso con chile",
+                                    visible: item[3] == "Queso con chile",
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         const SizedBox(height: 10.0),
                                         Text(
-                                          "Chile Jalapeño: ${items[idx][9]}",
+                                          "Chile Jalapeño: ${item[9]}",
                                           textAlign: TextAlign.left,
                                           style: textGray,
                                         ),
                                         const SizedBox(height: 10.0),
                                         Text(
-                                          "Chile bolson verde rojo y amarillo: ${items[idx][10]}",
+                                          "Chile bolson verde rojo y amarillo: ${item[10]}",
                                           textAlign: TextAlign.left,
                                           style: textGray,
                                         ),
@@ -208,13 +219,13 @@ class Queso extends GetView<UserController> {
                                     )),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Registrado por ${items[idx][0]} ",
+                                  "Registrado por ${item[0]} ",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  f.format(DateTime.parse(items[idx][1])),
+                                  f.format(DateTime.parse(item[1])),
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 )
@@ -234,5 +245,82 @@ class Queso extends GetView<UserController> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<dynamic> buildShowModalBottomSheet(
+    BuildContext context, {
+    title = "Servicio/Producto",
+    required RxList<String> datos,
+    required RxList<String> opciones,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        padding: const EdgeInsets.all(8.0),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Aplicar"))
+            ],
+          ),
+          Obx(
+            () => Column(
+              children: List.generate(
+                datos.value.length,
+                (idx) => CheckboxListTile(
+                  title: Text(datos.value[idx]),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: opciones.value.contains(datos.value[idx]),
+                  onChanged: (value) {
+                    if (value == true) {
+                      opciones.value = [...opciones.value, datos.value[idx]];
+                      return;
+                    }
+                    opciones.value = opciones.value
+                        .where((e) => e != datos.value[idx])
+                        .toList();
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool filterDate(String date) {
+    return DateTime.parse(date).isBefore(
+      controller.fechaFiltro.value.add(
+        const Duration(days: 1),
+      ),
+    );
+  }
+
+  bool filterByRegistrador(String registrador) {
+    if (controller.registradores.value.isEmpty) {
+      return controller.registradoresCopy.value.contains(registrador);
+    }
+    return controller.registradores.value.contains(registrador);
+  }
+
+  bool filterByCliente(String cliente) {
+    if (controller.clientes.value.isEmpty) {
+      return controller.clientesCopy.value.contains(cliente);
+    }
+    return controller.clientes.value.contains(cliente);
+  }
+
+  bool filterName(String producto) {
+    if (controller.productosCobrar.value.isEmpty) {
+      return controller.productosCobrarCopy.value.contains(producto);
+    }
+    return controller.productosCobrar.value.contains(producto);
   }
 }
