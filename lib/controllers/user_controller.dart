@@ -43,9 +43,9 @@ class UserController extends GetxController {
   var serviciosProductosPagar = List<String>.empty().obs;
   var serviciosProductosPagarCopy = [""].obs;
 
-  var servicioProductoCobrar = "".obs;
-  var serviciosProductosCobrar = [].obs;
-  var serviciosProductosCobrarCopy = [""].obs;
+  var productoCobrar = "".obs;
+  var productosCobrar = List<String>.empty().obs;
+  var productosCobrarCopy = [""].obs;
 
   var searchSelectedaArg = "".obs;
   GoogleSignInAccount? account;
@@ -124,14 +124,17 @@ class UserController extends GetxController {
         removeFisrt: false);
     serviciosProductosPagarCopy.value = data[0].sublist(1).cast();
     unidadesCopy.value = data[1].sublist(1).cast();
-    serviciosProductosCobrarCopy.value = data[2].sublist(1).cast();
+    productosCobrarCopy.value = data[2].sublist(1).cast();
     proveedoresCopy.value = data[3].sublist(1).cast();
     clientesCopy.value = data[4].sublist(1).cast();
     registradoresCopy.value = data[5].sublist(1).cast();
 
     servicioProductoPagar.value = serviciosProductosPagarCopy.value[0];
+    productoCobrar.value = productosCobrarCopy.value[0];
+
     unidad.value = unidadesCopy.value[0];
     proveedor.value = proveedoresCopy.value[0];
+    cliente.value = clientesCopy.value[0];
     registradoPor.value = registradoresCopy.value[0];
   }
 }

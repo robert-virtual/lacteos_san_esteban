@@ -10,7 +10,7 @@ class PorCobrar extends GetView<UserController> {
     "Producto",
     "Cantidad",
     "Monto",
-    "Proveedor",
+    "Cliente",
     "Registrado por",
     "Fecha"
   ];
@@ -31,53 +31,43 @@ class PorCobrar extends GetView<UserController> {
                       searchArguments.length,
                       (i) => Obx(
                         () => ChoiceChip(
-                          label: Obx(
-                            () => Row(
-                              children: [
-                                Text(searchArguments[i]),
-                                Icon(controller.servicioProductoPagar.value ==
-                                        searchArguments[i]
-                                    ? Icons.close
-                                    : Icons.expand_more)
-                              ],
-                            ),
+                          label: Row(
+                            children: [
+                              Text(searchArguments[i]),
+                              const Icon(Icons.expand_more)
+                            ],
                           ),
                           onSelected: (selected) {
-                            if (!selected) {
-                              controller.servicioProductoPagar.value = "";
-                              return;
-                            }
-                            controller.servicioProductoPagar.value =
+                            controller.searchSelectedaArg.value =
                                 searchArguments[i];
+                            if (!selected) {
+                              controller.searchSelectedaArg.value = "";
+                            }
                             switch (searchArguments[i]) {
-                              case "Servicio/Producto":
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  const Text(
-                                                      "Servicio/Producto"),
-                                                  ElevatedButton(
-                                                      onPressed: () {},
-                                                      child:
-                                                          const Text("Aplicar"))
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Checkbox(
-                                                      value: false,
-                                                      onChanged: (value) {}),
-                                                  const Text("hola"),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ));
+                              case "Producto":
+                                /* buildShowModalBottomSheet(context); */
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.productosCobrarCopy,
+                                  opciones: controller.productosCobrar,
+                                );
+                                break;
+                              case "Cliente":
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.clientesCopy,
+                                  opciones: controller.clientes,
+                                );
+                                break;
+                              case "Registrado por":
+                                buildShowModalBottomSheet(
+                                  context,
+                                  title: searchArguments[i],
+                                  datos: controller.registradoresCopy,
+                                  opciones: controller.registradores,
+                                );
                                 break;
                               case "Fecha":
                                 showDatePicker(
@@ -93,7 +83,7 @@ class PorCobrar extends GetView<UserController> {
                               default:
                             }
                           },
-                          selected: controller.servicioProductoPagar.value ==
+                          selected: controller.searchSelectedaArg.value ==
                               searchArguments[i],
                         ),
                       ),
@@ -104,7 +94,7 @@ class PorCobrar extends GetView<UserController> {
             )),
       ),
       body: FutureBuilder<List<List>>(
-          future: controller.getSheet("CuentasPorPagar!A:G"),
+          future: controller.getSheet("CuentasPorCobrar!A:F"),
           builder: (ctx, snap) {
             if (!snap.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -120,9 +110,13 @@ class PorCobrar extends GetView<UserController> {
             return Obx(
               () {
                 final items = snap.data!
-                    .where((e) => DateTime.parse(e[1]).isBefore(controller
-                        .fechaFiltro.value
-                        .add(const Duration(days: 1))))
+                    .where(
+                      (e) =>
+                          filterName(e[2]) &&
+                          filterDate(e[1]) &&
+                          filterByCliente(e[4]) &&
+                          filterByRegistrador(e[0]),
+                    )
                     .toList();
 
                 return ListView.builder(
@@ -138,13 +132,13 @@ class PorCobrar extends GetView<UserController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Lps. ${items[idx][6]} | ${items[idx][2]}",
+                                  "Lps. ${items[idx][5]} | ${items[idx][2]}",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(fontSize: 20),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "${items[idx][2]} ${items[idx][3]} ${items[idx][4]}",
+                                  "${items[idx][2]} ${items[idx][3]} Libras",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                     color: Colors.black54,
@@ -160,7 +154,7 @@ class PorCobrar extends GetView<UserController> {
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Proveedor: ${items[idx][5]}",
+                                  "Cliente: ${items[idx][4]}",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                     color: Colors.black54,
@@ -183,10 +177,90 @@ class PorCobrar extends GetView<UserController> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.toNamed("/form_por_pagar");
+          Get.toNamed("/form_por_cobrar");
         },
         child: const Icon(Icons.add),
       ),
     );
   }
+  Future<dynamic> buildShowModalBottomSheet(
+    BuildContext context, {
+    title = "Servicio/Producto",
+    required RxList<String> datos,
+    required RxList<String> opciones,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        padding: const EdgeInsets.all(8.0),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Aplicar"))
+            ],
+          ),
+          Obx(
+            () => Column(
+              children: List.generate(
+                datos.value.length,
+                (idx) => CheckboxListTile(
+                  title: Text(datos.value[idx]),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: opciones.value.contains(datos.value[idx]),
+                  onChanged: (value) {
+                    if (value == true) {
+                      opciones.value = [...opciones.value, datos.value[idx]];
+                      return;
+                    }
+                    opciones.value = opciones.value
+                        .where((e) => e != datos.value[idx])
+                        .toList();
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  bool filterDate(String date) {
+    return DateTime.parse(date).isBefore(
+      controller.fechaFiltro.value.add(
+        const Duration(days: 1),
+      ),
+    );
+  }
+
+  bool filterByRegistrador(String registrador) {
+    if (controller.registradores.value.isEmpty) {
+      return controller.registradoresCopy.value.contains(registrador);
+    }
+    return controller.registradores.value.contains(registrador);
+  }
+
+  bool filterByCliente(String cliente) {
+    if (controller.clientes.value.isEmpty) {
+      return controller.clientesCopy.value.contains(cliente);
+    }
+    return controller.clientes.value.contains(cliente);
+  }
+
+  bool filterName(String producto) {
+    if (controller.productosCobrar.value.isEmpty) {
+      return controller.productosCobrarCopy.value
+          .contains(producto);
+    }
+    return controller.productosCobrar.value.contains(producto);
+  }
+
+
 }

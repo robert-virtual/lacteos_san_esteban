@@ -108,9 +108,6 @@ class PorPagar extends GetView<UserController> {
             }
             return Obx(
               () {
-                print(
-                    "re dibujar proveedores: ${controller.proveedores} registradore:");
-                print(controller.registradores);
                 final items = snap.data!
                     .where(
                       (e) =>
@@ -251,13 +248,9 @@ class PorPagar extends GetView<UserController> {
 
   bool filterByProveedor(String proveedor) {
     if (controller.proveedores.value.isEmpty) {
-      final res = controller.proveedoresCopy.value.contains(proveedor);
-      print("empty - $res");
-      return res;
+      return controller.proveedoresCopy.value.contains(proveedor);
     }
-    final res = controller.proveedores.value.contains(proveedor);
-    print("not empty - $res");
-    return res;
+    return controller.proveedores.value.contains(proveedor);
   }
 
   bool filterName(String servicioProducto) {

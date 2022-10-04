@@ -83,6 +83,8 @@ class PorPagarForm extends GetView<UserController> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            const Text("Proveedor"),
             Obx(
               () => DropdownButton<String>(
                   value: controller.proveedor.value,
