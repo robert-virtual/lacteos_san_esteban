@@ -39,6 +39,7 @@ dependencies:
   http: ^0.13.5
   intl: ^0.17.0
   flutter_launcher_icons: ^0.10.0
+  grouped_list: ^5.1.2
 
 dev_dependencies:
   flutter_test:

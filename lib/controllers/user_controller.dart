@@ -24,7 +24,6 @@ class UserController extends GetxController {
   var fechaFiltro = DateTime.now().obs;
 
   var cuentasCobrar = List<List>.empty().obs;
-  var egresos = 0.0.obs;
   var ingresos = 0.0.obs;
   var cuentasPagar = List<List>.empty().obs;
 

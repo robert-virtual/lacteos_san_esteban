@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
 class PorPagar extends GetView<UserController> {
   PorPagar({Key? key}) : super(key: key);
   final f = DateFormat("dd/MM/yyyy hh:mm a");
+  final f2 = DateFormat("MMM");
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
   final searchArguments = [
@@ -19,10 +21,7 @@ class PorPagar extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(
-          () =>
-              Text("Egresos del mes (${nf.format(controller.egresos.value)})"),
-        ),
+        title: const Text("Egresos"),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -97,100 +96,107 @@ class PorPagar extends GetView<UserController> {
               ),
             )),
       ),
-      body: FutureBuilder<List<List>>(future: () {
-        final data = controller.getSheet("CuentasPorPagar!A:G");
-        data.then((value) {
-          controller.cuentasPagar.value = value;
-          controller.egresos.value = controller.cuentasPagar
-              .where(
-                  (cp) => DateTime.parse(cp[1]).month == DateTime.now().month)
-              .map((e) => double.parse(e[6]))
-              .reduce((value, element) => value + element);
-        });
-        return data;
-      }(), builder: (ctx, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snap.hasError) {
-          return const Center(
-            child: Text(
-              "Ha ocurrido un error al cargar la informacion",
-              textAlign: TextAlign.center,
-            ),
-          );
-        }
-        if (!snap.hasData) {
-          return const Center(child: Text("No hay datos que mostrar"));
-        }
-        return Obx(
-          () {
-            final items = snap.data!
-                .where(
-                  (e) =>
-                      filterName(e[2]) &&
-                      filterDate(e[1]) &&
-                      filterByProveedor(e[5]) &&
-                      filterByRegistrador(e[0]),
-                )
-                .toList();
+      body: FutureBuilder<List<List>>(
+          future: controller.getSheet("CuentasPorPagar!A:G"),
+          builder: (ctx, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snap.hasError) {
+              return const Center(
+                child: Text(
+                  "Ha ocurrido un error al cargar la informacion",
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+            if (!snap.hasData) {
+              return const Center(child: Text("No hay datos que mostrar"));
+            }
+            return Obx(
+              () {
+                final items = snap.data!
+                    .where(
+                      (e) =>
+                          filterName(e[2]) &&
+                          filterDate(e[1]) &&
+                          filterByProveedor(e[5]) &&
+                          filterByRegistrador(e[0]),
+                    )
+                    .toList();
 
-            return ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (ctx, idx) {
-                  return Card(
-                    margin: const EdgeInsets.all(12.0),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Lps. ${items[idx][6]} | ${items[idx][2]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "${items[idx][2]} ${items[idx][3]} ${items[idx][4]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "Registrado por ${items[idx][0]} ",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              "Proveedor: ${items[idx][5]}",
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              f.format(DateTime.parse(items[idx][1])),
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(color: Colors.black54),
-                            )
-                          ],
+                return GroupedListView<List<dynamic>, int>(
+                    elements: items,
+                    groupBy: (List e) => DateTime.parse(e[1]).month,
+                    order: GroupedListOrder.DESC,
+                    useStickyGroupSeparators: true,
+                    groupSeparatorBuilder: (value) => Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            "${f2.format(DateTime(0, value))} (${nf.format(
+                              items
+                                  .where((cp) =>
+                                      DateTime.parse(cp[1]).month == value)
+                                  .map((e) => double.parse(e[6]))
+                                  .reduce((value, element) => value + element),
+                            )})",
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                });
-          },
-        );
-      }),
+                    itemBuilder: (ctx, pago) {
+                      return Card(
+                        margin: const EdgeInsets.all(12.0),
+                        child: InkWell(
+                          onTap: () {},
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Lps. ${pago[6]} | ${pago[2]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "${pago[2]} ${pago[3]} ${pago[4]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Registrado por ${pago[0]} ",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Proveedor: ${pago[5]}",
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  f.format(DateTime.parse(pago[1])),
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(color: Colors.black54),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    });
+              },
+            );
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.toNamed("/form_por_pagar");
