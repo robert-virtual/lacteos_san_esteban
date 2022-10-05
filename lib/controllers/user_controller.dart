@@ -145,5 +145,17 @@ class UserController extends GetxController {
     proveedor.value = proveedoresCopy.value[0];
     cliente.value = clientesCopy.value[0];
     registradoPor.value = registradoresCopy.value[0];
+    final idx = account!.email.indexOf("@");
+    final email = account!.email.substring(0, idx);
+    if (!registradoresCopy.contains(account!.displayName ?? email)) {
+      await sendSheet("Metadata!F${registradoresCopy.length + 2}",
+          [account!.displayName ?? email]);
+      final lista = await getSheet("Metadata!F:F",
+          removeFisrt: false,
+          reversed: false,
+          majorDimension: MajorDimension.COLUMNS);
+      lista[0].removeAt(0);
+      registradoresCopy.value = lista[0].cast();
+    }
   }
 }

@@ -17,7 +17,7 @@ class Queso extends GetView<UserController> {
   );
   final searchArguments = [
     "Tipo de queso",
-    "Libras Producidas",
+    /* "Libras Producidas", */
     "Registrado por",
     "Fecha"
   ];
