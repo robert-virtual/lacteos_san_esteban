@@ -98,7 +98,7 @@ class Requeson extends GetView<UserController> {
                 ),
               );
             }
-            if (snap.data != null) {
+            if (snap.data!.isEmpty) {
               return const Center(child: Text("No hay datos que mostrar"));
             }
             return Obx(

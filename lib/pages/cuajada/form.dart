@@ -97,17 +97,20 @@ class CuajadaForm extends GetView<UserController> {
         onPressed: () async {
           final res = await Get.showOverlay(
               loadingWidget: const Center(child: CircularProgressIndicator()),
-              asyncFunction: () async =>
-                  await controller.sendSheet("Cuajada!A:H", [
-                    controller.userName.value,
-                    f2.format(DateTime.now()),
-                    libras.text,
-                    lecheEntera.text,
-                    lecheDescremada.text,
-                    sal.text,
-                    cuajo.text,
-                    sueroParaCuajar.text,
-                  ]));
+              asyncFunction: () async {
+                final data = [
+                  controller.userName.value,
+                  f2.format(DateTime.now()),
+                  libras.text,
+                  lecheEntera.text,
+                  lecheDescremada.text,
+                  sal.text,
+                  cuajo.text,
+                  sueroParaCuajar.text,
+                ];
+                await controller.sendSheet("Cuajada!A:H", data);
+
+              });
           Get.back();
           Get.snackbar("Guardar Datos", res);
         },
