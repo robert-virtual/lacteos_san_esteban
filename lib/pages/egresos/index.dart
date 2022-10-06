@@ -114,7 +114,7 @@ class PorPagar extends GetView<UserController> {
                 ),
               );
             }
-            if (!snap.hasData) {
+            if (snap.data != null) {
               return const Center(child: Text("No hay datos que mostrar"));
             }
             return Obx(
