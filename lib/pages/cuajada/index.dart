@@ -52,14 +52,6 @@ class Cuajada extends GetView<UserController> {
                               controller.searchSelectedaArg.value = "";
                             }
                             switch (searchArguments[i]) {
-                              case "Libras Producidas":
-                                buildShowModalBottomSheet(
-                                  context,
-                                  title: searchArguments[i],
-                                  datos: controller.clientesCopy,
-                                  opciones: controller.clientes,
-                                );
-                                break;
                               case "Registrado por":
                                 buildShowModalBottomSheet(
                                   context,
@@ -93,7 +85,7 @@ class Cuajada extends GetView<UserController> {
             )),
       ),
       body: FutureBuilder<List<List>>(
-          future: controller.getSheet("Cuajada!A:K"),
+          future: controller.getSheet("Cuajada!A:H"),
           builder: (ctx, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -111,9 +103,8 @@ class Cuajada extends GetView<UserController> {
             }
             return Obx(
               () {
-                final items = snap.data!
-                    .where((e) => filterDate(e[1]) && filterName(e[3]))
-                    .toList();
+                final items =
+                    snap.data!.where((e) => filterDate(e[1])).toList();
                 return GroupedListView<List, String>(
                     elements: items,
                     groupBy: (List e) => f3.format(DateTime.parse(e[1])),
@@ -145,39 +136,39 @@ class Cuajada extends GetView<UserController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${item[3]} | ${item[2]} lbs producidas",
+                                  "Cuajada | ${item[2]} Libras producidas",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(fontSize: 20),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Leche Entera usada: ${item[4]} lts ",
+                                  "Leche Entera usada: ${item[3]} Libras",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                       fontSize: 15, color: Colors.black54),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Leche Descremada usada: ${item[5]} lts ",
+                                  "Leche Descremada usada: ${item[4]} Libras ",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
                                       fontSize: 15, color: Colors.black54),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Sal: ${item[6]}",
+                                  "Sal: ${item[5]}",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Cuajo: ${item[7]}",
+                                  "Cuajo: ${item[6]}",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Suero para Cuajar: ${item[8]} lts",
+                                  "Suero para Cuajar: ${item[7]} Libras",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
@@ -272,19 +263,5 @@ class Cuajada extends GetView<UserController> {
       return controller.registradoresCopy.value.contains(registrador);
     }
     return controller.registradores.value.contains(registrador);
-  }
-
-  bool filterByCliente(String cliente) {
-    if (controller.clientes.value.isEmpty) {
-      return controller.clientesCopy.value.contains(cliente);
-    }
-    return controller.clientes.value.contains(cliente);
-  }
-
-  bool filterName(String producto) {
-    if (controller.productosCobrar.value.isEmpty) {
-      return controller.productosCobrarCopy.value.contains(producto);
-    }
-    return controller.productosCobrar.value.contains(producto);
   }
 }
