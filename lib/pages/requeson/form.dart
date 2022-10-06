@@ -11,8 +11,9 @@ class RequesonForm extends GetView<UserController> {
   final sal = TextEditingController();
   final cuajo = TextEditingController();
   final sueroParaCuajar = TextEditingController();
-  final chileJalapeno = TextEditingController(text: "0");
-  final chileBolson = TextEditingController(text: "0");
+  final harina = TextEditingController(text: "0");
+  final almidon = TextEditingController(text: "0");
+  final requeson = TextEditingController(text: "0");
   final libras = TextEditingController();
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   @override
@@ -89,9 +90,27 @@ class RequesonForm extends GetView<UserController> {
               ),
             ),
             const SizedBox(height: 20),
-            GetBuilder<UserController>(
-                builder: (_) =>
-                    Text("Registrado por ${controller.account!.displayName}")),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: harina,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Harina de trigo (Libras)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: almidon,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Almidon (Gramos)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Obx(() => Text("Registrado por ${controller.userName.value}")),
             const SizedBox(height: 20),
             Text("Fecha: ${f.format(DateTime.now())}"),
           ],
@@ -104,17 +123,17 @@ class RequesonForm extends GetView<UserController> {
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
                       await controller.sendSheet("Requeson!A:K", [
-                        controller.account!.displayName,
+                        controller.userName.value,
                         f2.format(DateTime.now()),
                         libras.text,
-                        controller.tipoQueso.value,
                         lecheEntera.text,
                         lecheDescremada.text,
                         sal.text,
                         cuajo.text,
                         sueroParaCuajar.text,
-                        chileJalapeno.text,
-                        chileBolson.text,
+                        harina.text,
+                        almidon.text,
+                        requeson.text,
                       ]));
               Get.back();
               Get.snackbar("Guardar Datos", res);
