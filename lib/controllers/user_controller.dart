@@ -87,6 +87,9 @@ class UserController extends GetxController {
     reversed = true,
     removeFisrt = true,
   }) async {
+    if (account == null) {
+      return List.empty();
+    }
     final http.Response res = await http.get(
         Uri.parse(
             '$baseUrl${spread ?? spreadsheetId}/values/$sheetAndRange?majorDimension=${majorDimension.name}'),
@@ -135,6 +138,9 @@ class UserController extends GetxController {
         majorDimension: MajorDimension.COLUMNS,
         reversed: false,
         removeFisrt: false);
+    if (data.isEmpty) {
+      return;
+    }
     serviciosProductosPagarCopy.value = data[0].sublist(1).cast();
     unidadesCopy.value = data[1].sublist(1).cast();
     productosCobrarCopy.value = data[2].sublist(1).cast();
