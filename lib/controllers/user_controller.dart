@@ -18,7 +18,11 @@ class UserController extends GetxController {
   GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
     "https://www.googleapis.com/auth/spreadsheets",
   ]);
-  final spreadsheetId = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ";
+  final spreadsheetId =
+      const String.fromEnvironment("ENV", defaultValue: "DEVELOPMENT") ==
+              "PRODUCTION"
+          ? "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"
+          : "1VXOWrnURGrABxnMOxkYw_nmZpX-uInBXBbh1lPPpp2I";
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
 
   var tipoQueso = "".obs;
@@ -76,14 +80,14 @@ class UserController extends GetxController {
 
   Future<List<List>> getSheet(
     String sheetAndRange, {
-    String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ",
+    String? spread,
     MajorDimension majorDimension = MajorDimension.ROWS,
     reversed = true,
     removeFisrt = true,
   }) async {
     final http.Response res = await http.get(
         Uri.parse(
-            '$baseUrl$spread/values/$sheetAndRange?majorDimension=${majorDimension.name}'),
+            '$baseUrl${spread ?? spreadsheetId}/values/$sheetAndRange?majorDimension=${majorDimension.name}'),
         headers: await account!.authHeaders);
     if (res.statusCode != 200) {
       print(prettifyJsonEncode(jsonDecode(res.body)));
@@ -101,10 +105,10 @@ class UserController extends GetxController {
   }
 
   Future<String> sendSheet(String sheetAndRange, List values,
-      [String spread = "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"]) async {
+      [String? spread]) async {
     final http.Response res = await http.post(
         Uri.parse(
-            '$baseUrl$spread/values/$sheetAndRange:append?valueInputOption=USER_ENTERED'),
+            '$baseUrl${spread ?? spreadsheetId}/values/$sheetAndRange:append?valueInputOption=USER_ENTERED'),
         headers: await account!.authHeaders,
         body: jsonEncode({
           "values": [values]
