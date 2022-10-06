@@ -11,8 +11,9 @@ class QuesilloForm extends GetView<UserController> {
   final sal = TextEditingController();
   final cuajo = TextEditingController();
   final sueroParaCuajar = TextEditingController();
-  final chileJalapeno = TextEditingController(text: "0");
-  final chileBolson = TextEditingController(text: "0");
+  final harina = TextEditingController(text: "0");
+  final almidon = TextEditingController(text: "0");
+  final requeson = TextEditingController(text: "0");
   final libras = TextEditingController();
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   @override
@@ -89,41 +90,48 @@ class QuesilloForm extends GetView<UserController> {
               ),
             ),
             const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: harina,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Harina de trigo (Libras)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: almidon,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Almidon diclosan (Gramos)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: requeson,
+              decoration: const InputDecoration(
+                label: Text(
+                  "Requeson (Libras)",
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text("Tipo de Quesillo"),
             Obx(() => DropdownButton<String>(
-                hint: const Text("Tipo de Quesillo"),
-                value: controller.tipoQueso.value,
-                items:controller.productosCobrarCopy.where((prod) =>prod.startsWith("Queso") ) 
+                value: controller.tipoQuesillo.value,
+                items: controller.productosCobrarCopy
+                    .where((prod) => prod.startsWith("Quesillo"))
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                     .toList(),
-                onChanged: controller.setQueso)),
-            Obx(
-              () => Visibility(
-                  visible: controller.tipoQueso.value == "Queso Con Chile",
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        controller: chileJalapeno,
-                        decoration: const InputDecoration(
-                          label: Text(
-                            "Chile Jalapeño (Unidades)",
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        controller: chileBolson,
-                        decoration: const InputDecoration(
-                          label: Text(
-                            "Chile bolson verde rojo y amarillo (Unidades)",
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
-            ),
+                onChanged: (text) {
+                  if (text != null && text.isNotEmpty) {
+                    controller.tipoQuesillo.value = text;
+                  }
+                })),
             const SizedBox(height: 20),
             GetBuilder<UserController>(
                 builder: (_) =>
@@ -139,18 +147,19 @@ class QuesilloForm extends GetView<UserController> {
                   loadingWidget:
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
-                      await controller.sendSheet("Quesillo!A:K", [
-                        controller.account!.displayName,
+                      await controller.sendSheet("Quesillo!A:L", [
+                        controller.userName.value,
                         f2.format(DateTime.now()),
                         libras.text,
-                        controller.tipoQueso.value,
+                        controller.tipoQuesillo.value,
                         lecheEntera.text,
                         lecheDescremada.text,
                         sal.text,
                         cuajo.text,
                         sueroParaCuajar.text,
-                        chileJalapeno.text,
-                        chileBolson.text,
+                        harina.text,
+                        almidon.text,
+                        requeson.text,
                       ]));
               Get.back();
               Get.snackbar("Guardar Datos", res);

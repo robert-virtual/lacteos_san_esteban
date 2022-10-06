@@ -24,8 +24,9 @@ class UserController extends GetxController {
           ? "1hlcv__-71at852uml7TOKA_AS90qlkOQvcHOk-yq1bQ"
           : "1VXOWrnURGrABxnMOxkYw_nmZpX-uInBXBbh1lPPpp2I";
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
-
+  var userName = "".obs;
   var tipoQueso = "".obs;
+  var tipoQuesillo = "".obs;
   var tipoMantequilla = "".obs;
 
   var monto = 0.0.obs;
@@ -145,16 +146,19 @@ class UserController extends GetxController {
     unidad.value = unidadesCopy.value[0];
     tipoQueso.value =
         productosCobrarCopy.value.where((e) => e.startsWith("Queso")).first;
-    tipoMantequilla.value =
-        productosCobrarCopy.value.where((e) => e.startsWith("Mantequilla")).first;
+    tipoMantequilla.value = productosCobrarCopy.value
+        .where((e) => e.startsWith("Mantequilla"))
+        .first;
+    tipoQuesillo.value =
+        productosCobrarCopy.value.where((e) => e.startsWith("Quesillo")).first;
+
     proveedor.value = proveedoresCopy.value[0];
     cliente.value = clientesCopy.value[0];
     registradoPor.value = registradoresCopy.value[0];
     final idx = account!.email.indexOf("@");
-    final email = account!.email.substring(0, idx);
-    if (!registradoresCopy.contains(account!.displayName ?? email)) {
-      await sendSheet("Metadata!F${registradoresCopy.length + 2}",
-          [account!.displayName ?? email]);
+    userName.value = account!.displayName ?? account!.email.substring(0, idx);
+    if (!registradoresCopy.contains(userName.value)) {
+      await sendSheet("Metadata!F${registradoresCopy.length + 2}", [userName]);
       final lista = await getSheet("Metadata!F:F",
           removeFisrt: false,
           reversed: false,

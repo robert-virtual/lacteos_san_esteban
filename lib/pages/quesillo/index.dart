@@ -15,12 +15,7 @@ class Quesillo extends GetView<UserController> {
   final textGray = const TextStyle(
     color: Colors.black54,
   );
-  final searchArguments = [
-    "Tipo de Quesillo",
-    /* "Libras Producidas", */
-    "Registrado por",
-    "Fecha"
-  ];
+  final searchArguments = ["Tipo de Quesillo", "Registrado por", "Fecha"];
   Quesillo({Key? key}) : super(key: key);
 
   @override
@@ -103,7 +98,7 @@ class Quesillo extends GetView<UserController> {
             )),
       ),
       body: FutureBuilder<List<List>>(
-          future: controller.getSheet("Quesillo!A:K"),
+          future: controller.getSheet("Quesillo!A:L"),
           builder: (ctx, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -175,12 +170,6 @@ class Quesillo extends GetView<UserController> {
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Tipo de Quesillo: ${item[3]}",
-                                  textAlign: TextAlign.left,
-                                  style: textGray,
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
                                   "Sal: ${item[6]}",
                                   textAlign: TextAlign.left,
                                   style: textGray,
@@ -193,30 +182,27 @@ class Quesillo extends GetView<UserController> {
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Suero para Cuajar: ${item[8]} lts",
+                                  "Suero para Cuajar: ${item[8]} litros",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
-                                Visibility(
-                                    visible: item[3] == "Quesillo con chile",
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 10.0),
-                                        Text(
-                                          "Chile Jalapeño: ${item[9]}",
-                                          textAlign: TextAlign.left,
-                                          style: textGray,
-                                        ),
-                                        const SizedBox(height: 10.0),
-                                        Text(
-                                          "Chile bolson verde rojo y amarillo: ${item[10]}",
-                                          textAlign: TextAlign.left,
-                                          style: textGray,
-                                        ),
-                                      ],
-                                    )),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Harina de trigo: ${item[9]} Libras",
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Almidon diclosan: ${item[10]} Gramos",
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
+                                ),
+                                Text(
+                                  "Requeson: ${item[11]} libras",
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
+                                ),
                                 const SizedBox(height: 10.0),
                                 Text(
                                   "Registrado por ${item[0]} ",
