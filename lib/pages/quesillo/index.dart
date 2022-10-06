@@ -4,26 +4,30 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:lateos_san_esteban/controllers/user_controller.dart';
 
-class PorCobrar extends GetView<UserController> {
-  PorCobrar({Key? key}) : super(key: key);
+class Quesillo extends GetView<UserController> {
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   final f2 = DateFormat("yyyy MMM");
-  final f3 = DateFormat("yyyyMM");
-  final monto = TextEditingController(text: "0");
   final nf =
       NumberFormat.currency(locale: "en_HN", decimalDigits: 2, symbol: "L. ");
+  final f3 = DateFormat("yyyyMM");
+  final fDate = DateFormat("dd/MM/yyyy");
+  final searchFocus = FocusNode();
+  final textGray = const TextStyle(
+    color: Colors.black54,
+  );
   final searchArguments = [
-    "Producto",
-    "Monto",
-    "Cliente",
+    "Tipo de Quesillo",
+    /* "Libras Producidas", */
     "Registrado por",
     "Fecha"
   ];
+  Quesillo({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Ingresos"),
+        title: const Text("Quesillo"),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -49,21 +53,17 @@ class PorCobrar extends GetView<UserController> {
                               controller.searchSelectedaArg.value = "";
                             }
                             switch (searchArguments[i]) {
-                              case "Producto":
+                              case "Tipo de Quesillo":
                                 /* buildShowModalBottomSheet(context); */
-                                buildBottomSheet(
+                                buildShowModalBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.productosCobrarCopy,
                                   opciones: controller.productosCobrar,
                                 );
                                 break;
-                              case "Monto":
-                                showAmoutBottomSheet(context,
-                                    target: controller.montoCobrar);
-                                break;
-                              case "Cliente":
-                                buildBottomSheet(
+                              case "Libras Producidas":
+                                buildShowModalBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.clientesCopy,
@@ -71,7 +71,7 @@ class PorCobrar extends GetView<UserController> {
                                 );
                                 break;
                               case "Registrado por":
-                                buildBottomSheet(
+                                buildShowModalBottomSheet(
                                   context,
                                   title: searchArguments[i],
                                   datos: controller.registradoresCopy,
@@ -103,7 +103,7 @@ class PorCobrar extends GetView<UserController> {
             )),
       ),
       body: FutureBuilder<List<List>>(
-          future: controller.getSheet("CuentasPorCobrar!A:F"),
+          future: controller.getSheet("Quesillo!A:K"),
           builder: (ctx, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -122,17 +122,9 @@ class PorCobrar extends GetView<UserController> {
             return Obx(
               () {
                 final items = snap.data!
-                    .where(
-                      (e) =>
-                          filterByRegistrador(e[0]) &&
-                          filterDate(e[1]) &&
-                          filterName(e[2]) &&
-                          filterByCliente(e[4]) &&
-                          filterByMonto(e[5]),
-                    )
+                    .where((e) => filterDate(e[1]) && filterName(e[3]))
                     .toList();
-
-                return GroupedListView<List<dynamic>, String>(
+                return GroupedListView<List, String>(
                     elements: items,
                     groupBy: (List e) => f3.format(DateTime.parse(e[1])),
                     groupComparator: (v1, v2) =>
@@ -147,18 +139,12 @@ class PorCobrar extends GetView<UserController> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         child: Text(
-                          "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${nf.format(
-                            items
-                                .where((cp) =>
-                                    DateTime.parse(cp[1]).month == month)
-                                .map((e) => double.parse(e[5]))
-                                .reduce((v, element) => v + element),
-                          )})",
+                          "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${items.where((cp) => DateTime.parse(cp[1]).month == month).map((e) => double.parse(e[2])).reduce((v, element) => v + element)} Libras)",
                           textAlign: TextAlign.center,
                         ),
                       );
                     },
-                    itemBuilder: (ctx, cobro) {
+                    itemBuilder: (ctx, item) {
                       return Card(
                         margin: const EdgeInsets.all(12.0),
                         child: InkWell(
@@ -169,39 +155,79 @@ class PorCobrar extends GetView<UserController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Lps. ${cobro[5]} | ${cobro[2]}",
+                                  "${item[3]} | ${item[2]} lbs producidas",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(fontSize: 20),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "${cobro[3]} Libras de ${cobro[2]} ",
+                                  "Leche Entera usada: ${item[4]} lts ",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
+                                      fontSize: 15, color: Colors.black54),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Registrado por ${cobro[0]} ",
+                                  "Leche Descremada usada: ${item[5]} lts ",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
+                                      fontSize: 15, color: Colors.black54),
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Cliente: ${cobro[4]}",
+                                  "Tipo de Quesillo: ${item[3]}",
                                   textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
+                                  style: textGray,
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  f.format(DateTime.parse(cobro[1])),
+                                  "Sal: ${item[6]}",
                                   textAlign: TextAlign.left,
-                                  style: const TextStyle(color: Colors.black54),
+                                  style: textGray,
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Cuajo: ${item[7]}",
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Suero para Cuajar: ${item[8]} lts",
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
+                                ),
+                                Visibility(
+                                    visible: item[3] == "Quesillo con chile",
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 10.0),
+                                        Text(
+                                          "Chile Jalapeño: ${item[9]}",
+                                          textAlign: TextAlign.left,
+                                          style: textGray,
+                                        ),
+                                        const SizedBox(height: 10.0),
+                                        Text(
+                                          "Chile bolson verde rojo y amarillo: ${item[10]}",
+                                          textAlign: TextAlign.left,
+                                          style: textGray,
+                                        ),
+                                      ],
+                                    )),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  "Registrado por ${item[0]} ",
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  f.format(DateTime.parse(item[1])),
+                                  textAlign: TextAlign.left,
+                                  style: textGray,
                                 )
                               ],
                             ),
@@ -214,48 +240,14 @@ class PorCobrar extends GetView<UserController> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.toNamed("/form_por_cobrar");
+          Get.toNamed("/quesillo_form");
         },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  Future<dynamic> showAmoutBottomSheet(BuildContext context,
-      {String title = "Monto", required RxDouble target}) {
-    return showModalBottomSheet(
-        context: context,
-        builder: (ctx) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(title),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Aplicar"))
-                  ],
-                ),
-                TextField(
-                  controller: monto,
-                  onChanged: (value) {
-                    target.value = double.parse(value.isEmpty ? "0" : value);
-                  },
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(label: Text(title)),
-                )
-              ],
-            ),
-          );
-        });
-  }
-
-  Future<dynamic> buildBottomSheet(
+  Future<dynamic> buildShowModalBottomSheet(
     BuildContext context, {
     title = "Servicio/Producto",
     required RxList<String> datos,
@@ -330,12 +322,5 @@ class PorCobrar extends GetView<UserController> {
       return controller.productosCobrarCopy.value.contains(producto);
     }
     return controller.productosCobrar.value.contains(producto);
-  }
-
-  bool filterByMonto(String monto) {
-    if (controller.montoCobrar.value == 0) {
-      return true;
-    }
-    return double.parse(monto) == controller.montoCobrar.value;
   }
 }

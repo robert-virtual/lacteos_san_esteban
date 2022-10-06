@@ -212,7 +212,7 @@ class PorPagar extends GetView<UserController> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.toNamed("/form_por_pagar");
+          Get.toNamed("/egresos_form");
         },
         child: const Icon(Icons.add),
       ),

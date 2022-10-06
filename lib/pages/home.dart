@@ -8,14 +8,21 @@ class Home extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      {"image": "por_pagar", "name": "Cuentas Por Pagar", "route": "/por_pagar"},
-      {"image": "por_cobrar", "name": "Cuentas Por Cobrar", "route": "/por_cobrar"},
+      {
+        "image": "por_pagar",
+        "name": "Cuentas Por Pagar",
+        "route": "/egresos"
+      },
+      {
+        "image": "por_cobrar",
+        "name": "Cuentas Por Cobrar",
+        "route": "/ingresos"
+      },
       {"image": "queso", "name": "Queso", "route": "/queso"},
       {"image": "mantequilla", "name": "Mantequilla", "route": "/mantequilla"},
       {"image": "quesillo", "name": "Quesillo", "route": "/quesillo"},
       {"image": "cuajada", "name": "Cuajada", "route": "/cuajada"},
       {"image": "requeson", "name": "Requeson", "route": "/requeson"},
-      {"image": "crema", "name": "Crema", "route": "/crema"}
     ];
     return Scaffold(
       appBar: AppBar(title: const Text("Lacteos San Esteban")),
@@ -33,7 +40,7 @@ class Home extends GetView<UserController> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                       leading: Image.asset("assets/${pages[idx]["image"]!}.png",
-                           width: 100.0),
+                          width: 100.0),
                       title: Text(pages[idx]["name"]!),
                       trailing: const Icon(Icons.chevron_right),
                     ),
