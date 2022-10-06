@@ -103,8 +103,9 @@ class Cuajada extends GetView<UserController> {
             }
             return Obx(
               () {
-                final items =
-                    snap.data!.where((e) => filterDate(e[1])).toList();
+                final items = snap.data!
+                    .where((e) => filterDate(e[1]) && filterByRegistrador(e[0]))
+                    .toList();
                 return GroupedListView<List, String>(
                     elements: items,
                     groupBy: (List e) => f3.format(DateTime.parse(e[1])),

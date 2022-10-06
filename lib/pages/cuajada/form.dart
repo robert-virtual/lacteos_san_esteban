@@ -87,9 +87,7 @@ class CuajadaForm extends GetView<UserController> {
             ),
           ),
           const SizedBox(height: 20),
-          GetBuilder<UserController>(
-              builder: (_) =>
-                  Text("Registrado por ${controller.account!.displayName}")),
+          Obx(() => Text("Registrado por ${controller.userName.value}")),
           const SizedBox(height: 20),
           Text("Fecha: ${f.format(DateTime.now())}"),
         ],

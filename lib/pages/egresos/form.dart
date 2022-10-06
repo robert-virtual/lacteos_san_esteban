@@ -140,9 +140,8 @@ class PorPagarForm extends GetView<UserController> {
               child: const Text("Agregar Proveedor"),
             ),
             const SizedBox(height: 20),
-            GetBuilder<UserController>(
-              builder: (_) =>
-                  Text("Registrado por ${controller.account!.displayName}"),
+            Obx(
+              () => Text("Registrado por ${controller.userName.value}"),
             ),
             const SizedBox(height: 20),
             Text("Fecha: ${f.format(DateTime.now())}"),
@@ -161,7 +160,7 @@ class PorPagarForm extends GetView<UserController> {
                   await controller.sendSheet(
                     "CuentasPorPagar!A:G",
                     [
-                      controller.account!.displayName,
+                      controller.userName.value,
                       f2.format(DateTime.now()),
                       controller.servicioProductoPagar.value,
                       cantidad.text.isEmpty ? "" : double.parse(cantidad.text),

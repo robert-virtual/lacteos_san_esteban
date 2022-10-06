@@ -80,7 +80,8 @@ class MantequillaForm extends GetView<UserController> {
             ),
             Obx(
               () => Visibility(
-                  visible: controller.tipoMantequilla.value != "Mantequilla Crema Sin Sal",
+                  visible: controller.tipoMantequilla.value !=
+                      "Mantequilla Crema Sin Sal",
                   child: TextField(
                     keyboardType: TextInputType.number,
                     controller: sal,
@@ -92,9 +93,7 @@ class MantequillaForm extends GetView<UserController> {
                   )),
             ),
             const SizedBox(height: 20),
-            GetBuilder<UserController>(
-                builder: (_) =>
-                    Text("Registrado por ${controller.account!.displayName}")),
+            Obx(() => Text("Registrado por ${controller.userName.value}")),
             const SizedBox(height: 20),
             Text("Fecha: ${f.format(DateTime.now())}"),
           ],
@@ -107,13 +106,14 @@ class MantequillaForm extends GetView<UserController> {
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
                       await controller.sendSheet("Mantequilla!A:H", [
-                        controller.account!.displayName,
+                        controller.userName.value,
                         f2.format(DateTime.now()),
                         libras.text,
                         controller.tipoMantequilla.value,
                         lecheEntera.text,
-                         controller.tipoMantequilla.value.contains("Sin")
-                         ? 0:sal.text,
+                        controller.tipoMantequilla.value.contains("Sin")
+                            ? 0
+                            : sal.text,
                         mantequillaCrema.text,
                         cremaIndustrial.text,
                       ]));

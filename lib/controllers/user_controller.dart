@@ -60,7 +60,7 @@ class UserController extends GetxController {
 
   var searchSelectedaArg = "".obs;
   GoogleSignInAccount? account;
-
+  var loading = true.obs;
   @override
   void onInit() {
     super.onInit();
@@ -68,9 +68,11 @@ class UserController extends GetxController {
       account = _account;
       update();
       loadMetadata();
+      loading.value = false;
     });
     googleSignIn.signInSilently().then((account_) {
       update();
+      loading.value = false;
       if (account_ != null) {
         Get.toNamed("/home");
         loadMetadata();

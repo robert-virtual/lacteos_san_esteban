@@ -10,8 +10,12 @@ class Login extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Lacteos San Esteban")),
-      body: GetBuilder<UserController>(
-          builder: (_) => _buildBody(controller.account)),
+      body: Obx(() => controller.loading.value
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : GetBuilder<UserController>(
+              builder: (_) => _buildBody(controller.account))),
     );
   }
 
