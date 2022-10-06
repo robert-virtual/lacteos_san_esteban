@@ -168,13 +168,7 @@ class Mantequilla extends GetView<UserController> {
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Tipo de Mantequilla: ${item[3]}",
-                                  textAlign: TextAlign.left,
-                                  style: textGray,
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Sal: ${item[5]}",
+                                  "Sal: ${item[5]} gramos",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),

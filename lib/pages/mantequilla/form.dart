@@ -112,7 +112,8 @@ class MantequillaForm extends GetView<UserController> {
                         libras.text,
                         controller.tipoMantequilla.value,
                         lecheEntera.text,
-                        sal.text,
+                         controller.tipoMantequilla.value.contains("Sin")
+                         ? 0:sal.text,
                         mantequillaCrema.text,
                         cremaIndustrial.text,
                       ]));
