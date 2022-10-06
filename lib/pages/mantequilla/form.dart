@@ -7,12 +7,9 @@ class MantequillaForm extends GetView<UserController> {
   MantequillaForm({Key? key}) : super(key: key);
   final f2 = DateFormat("yyyy-MM-dd HH:mm:ss");
   final lecheEntera = TextEditingController();
-  final lecheDescremada = TextEditingController();
   final sal = TextEditingController();
-  final cuajo = TextEditingController();
-  final sueroParaCuajar = TextEditingController();
-  final chileJalapeno = TextEditingController(text: "0");
-  final chileBolson = TextEditingController(text: "0");
+  final mantequillaCrema = TextEditingController();
+  final cremaIndustrial = TextEditingController();
   final libras = TextEditingController();
   final f = DateFormat("dd/MM/yyyy hh:mm a");
   @override
@@ -51,77 +48,47 @@ class MantequillaForm extends GetView<UserController> {
             const SizedBox(height: 20),
             TextField(
               keyboardType: TextInputType.number,
-              controller: lecheDescremada,
+              controller: mantequillaCrema,
               decoration: const InputDecoration(
                 label: Text(
-                  "Leche descremada usada (Litros)",
+                  "Mantequilla Creama (Libras)",
                 ),
               ),
             ),
             const SizedBox(height: 20),
             TextField(
               keyboardType: TextInputType.number,
-              controller: sal,
+              controller: cremaIndustrial,
               decoration: const InputDecoration(
                 label: Text(
-                  "Sal Usada (gramos)",
+                  "Crema Industrial (Libras)",
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: cuajo,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Cuajo Usado (bolsitas)",
-                ),
-              ),
+            const Text("Tipo de Mantequilla"),
+            Obx(
+              () => DropdownButton<String>(
+                  value: controller.tipoMantequilla.value,
+                  items: controller.productosCobrarCopy
+                      .where((prod) => prod.startsWith("Mantequilla"))
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (text) {
+                    if (text != null) controller.tipoMantequilla.value = text;
+                  }),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: sueroParaCuajar,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Suero para Cuajar (Litros)",
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Obx(() => DropdownButton<String>(
-                hint: const Text("Tipo de Mantequilla"),
-                value: controller.tipoQueso.value,
-                items:controller.productosCobrarCopy.where((prod) =>prod.startsWith("Queso") ) 
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: controller.setQueso)),
             Obx(
               () => Visibility(
-                  visible: controller.tipoQueso.value == "Queso Con Chile",
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        controller: chileJalapeno,
-                        decoration: const InputDecoration(
-                          label: Text(
-                            "Chile Jalapeño (Unidades)",
-                          ),
-                        ),
+                  visible: controller.tipoMantequilla.value != "Mantequilla Crema Sin Sal",
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: sal,
+                    decoration: const InputDecoration(
+                      label: Text(
+                        "Sal Usada (gramos)",
                       ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        controller: chileBolson,
-                        decoration: const InputDecoration(
-                          label: Text(
-                            "Chile bolson verde rojo y amarillo (Unidades)",
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   )),
             ),
             const SizedBox(height: 20),
@@ -139,18 +106,15 @@ class MantequillaForm extends GetView<UserController> {
                   loadingWidget:
                       const Center(child: CircularProgressIndicator()),
                   asyncFunction: () async =>
-                      await controller.sendSheet("Mantequilla!A:K", [
+                      await controller.sendSheet("Mantequilla!A:H", [
                         controller.account!.displayName,
                         f2.format(DateTime.now()),
                         libras.text,
-                        controller.tipoQueso.value,
+                        controller.tipoMantequilla.value,
                         lecheEntera.text,
-                        lecheDescremada.text,
                         sal.text,
-                        cuajo.text,
-                        sueroParaCuajar.text,
-                        chileJalapeno.text,
-                        chileBolson.text,
+                        mantequillaCrema.text,
+                        cremaIndustrial.text,
                       ]));
               Get.back();
               Get.snackbar("Guardar Datos", res);

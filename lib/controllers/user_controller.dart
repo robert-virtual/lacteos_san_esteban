@@ -26,6 +26,7 @@ class UserController extends GetxController {
   final baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
 
   var tipoQueso = "".obs;
+  var tipoMantequilla = "".obs;
   var tiposQueso = List<String>.empty().obs;
   var tiposQuesoCopy = [""].obs;
 
@@ -146,6 +147,8 @@ class UserController extends GetxController {
     unidad.value = unidadesCopy.value[0];
     tipoQueso.value =
         productosCobrarCopy.value.where((e) => e.startsWith("Queso")).first;
+    tipoMantequilla.value =
+        productosCobrarCopy.value.where((e) => e.startsWith("Mantequilla")).first;
     proveedor.value = proveedoresCopy.value[0];
     cliente.value = clientesCopy.value[0];
     registradoPor.value = registradoresCopy.value[0];

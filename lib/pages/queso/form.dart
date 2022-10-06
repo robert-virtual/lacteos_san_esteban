@@ -89,10 +89,11 @@ class QuesoForm extends GetView<UserController> {
               ),
             ),
             const SizedBox(height: 20),
+            const Text("Tipo de Queso"),
             Obx(() => DropdownButton<String>(
-                hint: const Text("Tipo de Queso"),
                 value: controller.tipoQueso.value,
-                items:controller.productosCobrarCopy.where((prod) =>prod.startsWith("Queso") ) 
+                items: controller.productosCobrarCopy
+                    .where((prod) => prod.startsWith("Queso"))
                     .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                     .toList(),
                 onChanged: controller.setQueso)),
