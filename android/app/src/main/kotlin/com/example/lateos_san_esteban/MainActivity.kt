@@ -1,4 +1,4 @@
-package com.example.lateos_san_esteban
+package io.github.lateos_san_esteban.lateos_san_esteban
 
 import io.flutter.embedding.android.FlutterActivity
 

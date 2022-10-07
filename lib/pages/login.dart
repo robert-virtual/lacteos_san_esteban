@@ -67,7 +67,7 @@ class Login extends GetView<UserController> {
     try {
       await controller.googleSignIn.signIn();
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      Get.snackbar("Error", "Ha habido un error al iniciar session intenta mas tarde");
     }
   }
 
