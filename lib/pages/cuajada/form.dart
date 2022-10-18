@@ -22,7 +22,7 @@ class CuajadaForm extends GetView<UserController> {
         children: [
           const SizedBox(height: 20),
           const Text(
-            "Registrar produccion de Cuajada",
+            "Registrar producción de Cuajada",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20.0),
           ),

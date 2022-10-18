@@ -9,13 +9,16 @@ class Login extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Lacteos San Esteban")),
-      body: Obx(() => controller.loading.value
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : GetBuilder<UserController>(
-              builder: (_) => _buildBody(controller.account))),
+      appBar: AppBar(title: const Text("Lácteos San Esteban")),
+      body: Obx(
+        () => controller.loading.value
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : GetBuilder<UserController>(
+                builder: (_) => _buildBody(controller.account),
+              ),
+      ),
     );
   }
 
@@ -32,9 +35,9 @@ class Login extends GetView<UserController> {
               leading: GoogleUserCircleAvatar(identity: user),
               title: Text(user.displayName ?? ""),
               subtitle: Text(user.email)),
-          const Text("Inicio de session exitoso"),
+          const Text("Inicio de sesión exitoso"),
           ElevatedButton(
-              onPressed: _handleSignout, child: const Text("Cerrar session")),
+              onPressed: _handleSignout, child: const Text("Cerrar sesión")),
         ],
       );
     }
@@ -43,7 +46,7 @@ class Login extends GetView<UserController> {
       children: [
         Image.asset("assets/san_esteban.jpg"),
         const SizedBox(height: 10),
-        const Text("Usted no ha iniciado session"),
+        const Text("Usted no ha iniciado sesión"),
         const SizedBox(height: 10),
         ElevatedButton(
             onPressed: _handleSignin,
@@ -51,7 +54,7 @@ class Login extends GetView<UserController> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Iniciar session con google"),
+                const Text("Iniciar sesión con google"),
                 const SizedBox(width: 10),
                 Image.asset(
                   "assets/google.png",
@@ -67,7 +70,8 @@ class Login extends GetView<UserController> {
     try {
       await controller.googleSignIn.signIn();
     } catch (e) {
-      Get.snackbar("Error", "Ha habido un error al iniciar session intenta mas tarde");
+      Get.snackbar(
+          "Error", "Ha habido un error al iniciar sesión intenta más tarde");
     }
   }
 

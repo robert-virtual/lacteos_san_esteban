@@ -21,7 +21,7 @@ class MantequillaForm extends GetView<UserController> {
           children: [
             const SizedBox(height: 20),
             const Text(
-              "Registrar produccion de Mantequilla",
+              "Registrar producción de Mantequilla",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
@@ -51,7 +51,7 @@ class MantequillaForm extends GetView<UserController> {
               controller: mantequillaCrema,
               decoration: const InputDecoration(
                 label: Text(
-                  "Mantequilla Creama (Libras)",
+                  "Mantequilla Crema (Libras)",
                 ),
               ),
             ),

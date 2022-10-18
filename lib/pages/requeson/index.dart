@@ -26,7 +26,7 @@ class Requeson extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Requeson"),
+        title: const Text("Requesón"),
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: SingleChildScrollView(
@@ -137,7 +137,7 @@ class Requeson extends GetView<UserController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Requeson | ${item[2]} Libras producidas",
+                                  "Requesón | ${item[2]} Libras producidas",
                                   textAlign: TextAlign.left,
                                   style: const TextStyle(fontSize: 20),
                                 ),
@@ -181,7 +181,7 @@ class Requeson extends GetView<UserController> {
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Almidon diclosan: ${item[9]} gramos",
+                                  "Almidón diclosan: ${item[9]} gramos",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),

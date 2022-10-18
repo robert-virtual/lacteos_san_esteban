@@ -211,7 +211,7 @@ class Queso extends GetView<UserController> {
                                         ),
                                         const SizedBox(height: 10.0),
                                         Text(
-                                          "Chile bolson verde rojo y amarillo: ${item[10]}",
+                                          "Chile bolsón verde rojo y amarillo: ${item[10]}",
                                           textAlign: TextAlign.left,
                                           style: textGray,
                                         ),

@@ -25,7 +25,7 @@ class QuesilloForm extends GetView<UserController> {
           children: [
             const SizedBox(height: 20),
             const Text(
-              "Registrar produccion de Quesillo",
+              "Registrar producción de Quesillo",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
@@ -105,7 +105,7 @@ class QuesilloForm extends GetView<UserController> {
               controller: almidon,
               decoration: const InputDecoration(
                 label: Text(
-                  "Almidon diclosan (Gramos)",
+                  "Almidón diclosan (Gramos)",
                 ),
               ),
             ),
@@ -115,7 +115,7 @@ class QuesilloForm extends GetView<UserController> {
               controller: requeson,
               decoration: const InputDecoration(
                 label: Text(
-                  "Requeson (Libras)",
+                  "Requesón (Libras)",
                 ),
               ),
             ),

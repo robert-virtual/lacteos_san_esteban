@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_launcher_icons/utils.dart';
 import 'package:get/get.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -95,8 +94,9 @@ class UserController extends GetxController {
             '$baseUrl${spread ?? spreadsheetId}/values/$sheetAndRange?majorDimension=${majorDimension.name}'),
         headers: await account!.authHeaders);
     if (res.statusCode != 200) {
-      print(prettifyJsonEncode(jsonDecode(res.body)));
-      return List.empty();
+      print(jsonDecode(res.body));
+      throw Exception(
+          "Ups algo ha salido mal, vuelve a intentar más tarde. Error: ${res.statusCode}");
     }
     final Map<String, dynamic> data =
         json.decode(res.body) as Map<String, dynamic>;
@@ -120,7 +120,7 @@ class UserController extends GetxController {
         }));
     if (res.statusCode != 200) {
       print(res.body);
-      return "Hubo un error al guardar los datos (${res.statusCode})";
+      throw Exception("Hubo un error al guardar los datos (${res.statusCode})");
     }
     return "Datos guardados con exito";
   }
@@ -160,12 +160,13 @@ class UserController extends GetxController {
     tipoQuesillo.value =
         productosCobrarCopy.value.where((e) => e.startsWith("Quesillo")).first;
 
-    proveedor.value = proveedoresCopy.value[0];
-    cliente.value = clientesCopy.value[0];
-    registradoPor.value = registradoresCopy.value[0];
+    proveedor.value = proveedoresCopy.value.first;
+    cliente.value = clientesCopy.value.first;
+    registradoPor.value = registradoresCopy.value.first;
     final idx = account!.email.indexOf("@");
     userName.value = account!.displayName ?? account!.email.substring(0, idx);
-    if (!registradoresCopy.contains(userName.value)) {
+    if (registradoresCopy.isNotEmpty &&
+        !registradoresCopy.contains(userName.value)) {
       await sendSheet("Metadata!F${registradoresCopy.length + 2}", [userName]);
       final lista = await getSheet("Metadata!F:F",
           removeFisrt: false,

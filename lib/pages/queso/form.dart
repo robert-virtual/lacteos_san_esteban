@@ -24,7 +24,7 @@ class QuesoForm extends GetView<UserController> {
           children: [
             const SizedBox(height: 20),
             const Text(
-              "Registrar produccion de queso",
+              "Registrar producción de queso",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
@@ -118,7 +118,7 @@ class QuesoForm extends GetView<UserController> {
                         controller: chileBolson,
                         decoration: const InputDecoration(
                           label: Text(
-                            "Chile bolson verde rojo y amarillo (Unidades)",
+                            "Chile bolsón verde rojo y amarillo (Unidades)",
                           ),
                         ),
                       ),

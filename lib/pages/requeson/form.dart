@@ -25,7 +25,7 @@ class RequesonForm extends GetView<UserController> {
           children: [
             const SizedBox(height: 20),
             const Text(
-              "Registrar produccion de Requeson",
+              "Registrar producción de Requesón",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
@@ -105,7 +105,7 @@ class RequesonForm extends GetView<UserController> {
               controller: almidon,
               decoration: const InputDecoration(
                 label: Text(
-                  "Almidon (Gramos)",
+                  "Almidón (Gramos)",
                 ),
               ),
             ),

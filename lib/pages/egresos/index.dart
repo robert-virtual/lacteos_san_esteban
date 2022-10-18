@@ -25,80 +25,81 @@ class PorPagar extends GetView<UserController> {
       appBar: AppBar(
         title: const Text("Egresos"),
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Wrap(
-                    spacing: 4.0,
-                    children: List.generate(
-                      searchArguments.length,
-                      (i) => Obx(
-                        () => ChoiceChip(
-                          label: Row(
-                            children: [
-                              Text(searchArguments[i]),
-                              const Icon(Icons.expand_more)
-                            ],
-                          ),
-                          onSelected: (selected) {
-                            controller.searchSelectedaArg.value =
-                                searchArguments[i];
-                            if (!selected) {
-                              controller.searchSelectedaArg.value = "";
-                            }
-                            switch (searchArguments[i]) {
-                              case "Servicio/Producto":
-                                buildBottomSheet(
-                                  context,
-                                  title: searchArguments[i],
-                                  datos: controller.serviciosProductosPagarCopy,
-                                  opciones: controller.serviciosProductosPagar,
-                                );
-                                break;
-                              case "Monto":
-                                buildShowModalBottomSheet(context);
-                                break;
-                              case "Proveedor":
-                                buildBottomSheet(
-                                  context,
-                                  title: searchArguments[i],
-                                  datos: controller.proveedoresCopy,
-                                  opciones: controller.proveedores,
-                                );
-                                break;
-                              case "Registrado por":
-                                buildBottomSheet(
-                                  context,
-                                  title: searchArguments[i],
-                                  datos: controller.registradoresCopy,
-                                  opciones: controller.registradores,
-                                );
-                                break;
-                              case "Fecha":
-                                showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(2022),
-                                  lastDate: DateTime(DateTime.now().year + 5),
-                                ).then((x) {
-                                  controller.fechaFiltro.value =
-                                      x ?? DateTime.now();
-                                });
-                                break;
-                              default:
-                            }
-                          },
-                          selected: controller.searchSelectedaArg.value ==
-                              searchArguments[i],
+          preferredSize: const Size.fromHeight(48),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                Wrap(
+                  spacing: 4.0,
+                  children: List.generate(
+                    searchArguments.length,
+                    (i) => Obx(
+                      () => ChoiceChip(
+                        label: Row(
+                          children: [
+                            Text(searchArguments[i]),
+                            const Icon(Icons.expand_more)
+                          ],
                         ),
+                        onSelected: (selected) {
+                          controller.searchSelectedaArg.value =
+                              searchArguments[i];
+                          if (!selected) {
+                            controller.searchSelectedaArg.value = "";
+                          }
+                          switch (searchArguments[i]) {
+                            case "Servicio/Producto":
+                              buildBottomSheet(
+                                context,
+                                title: searchArguments[i],
+                                datos: controller.serviciosProductosPagarCopy,
+                                opciones: controller.serviciosProductosPagar,
+                              );
+                              break;
+                            case "Monto":
+                              buildShowModalBottomSheet(context);
+                              break;
+                            case "Proveedor":
+                              buildBottomSheet(
+                                context,
+                                title: searchArguments[i],
+                                datos: controller.proveedoresCopy,
+                                opciones: controller.proveedores,
+                              );
+                              break;
+                            case "Registrado por":
+                              buildBottomSheet(
+                                context,
+                                title: searchArguments[i],
+                                datos: controller.registradoresCopy,
+                                opciones: controller.registradores,
+                              );
+                              break;
+                            case "Fecha":
+                              showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2022),
+                                lastDate: DateTime(DateTime.now().year + 5),
+                              ).then((x) {
+                                controller.fechaFiltro.value =
+                                    x ?? DateTime.now();
+                              });
+                              break;
+                            default:
+                          }
+                        },
+                        selected: controller.searchSelectedaArg.value ==
+                            searchArguments[i],
                       ),
                     ),
-                  )
-                ],
-              ),
-            )),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
       body: FutureBuilder<List<List>>(
           future: controller.getSheet("CuentasPorPagar!A:G"),
@@ -109,7 +110,7 @@ class PorPagar extends GetView<UserController> {
             if (snap.hasError) {
               return const Center(
                 child: Text(
-                  "Ha ocurrido un error al cargar la informacion",
+                  "Ha ocurrido un error al cargar la información",
                   textAlign: TextAlign.center,
                 ),
               );
@@ -131,82 +132,83 @@ class PorPagar extends GetView<UserController> {
                     .toList();
 
                 return GroupedListView<List<dynamic>, String>(
-                    elements: items,
-                    groupBy: (List e) => f3.format(DateTime.parse(e[1])),
-                    groupComparator: (v1, v2) =>
-                        int.parse(v1).compareTo(int.parse(v2)),
-                    order: GroupedListOrder.DESC,
-                    itemComparator: (e1, e2) =>
-                        DateTime.parse(e1[1]).compareTo(DateTime.parse(e2[1])),
-                    useStickyGroupSeparators: true,
-                    groupSeparatorBuilder: (value) {
-                      final month = int.parse(value.substring(4));
-                      return Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${nf.format(
-                            items
-                                .where((cp) =>
-                                    DateTime.parse(cp[1]).month == month)
-                                .map((e) => double.parse(e[6]))
-                                .reduce((v, element) => v + element),
-                          )})",
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    },
-                    itemBuilder: (ctx, pago) {
-                      return Card(
-                        margin: const EdgeInsets.all(12.0),
-                        child: InkWell(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Lps. ${pago[6]} | ${pago[2]}",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(fontSize: 20),
+                  elements: items,
+                  groupBy: (List e) => f3.format(DateTime.parse(e[1])),
+                  groupComparator: (v1, v2) =>
+                      int.parse(v1).compareTo(int.parse(v2)),
+                  order: GroupedListOrder.DESC,
+                  itemComparator: (e1, e2) =>
+                      DateTime.parse(e1[1]).compareTo(DateTime.parse(e2[1])),
+                  useStickyGroupSeparators: true,
+                  groupSeparatorBuilder: (value) {
+                    final month = int.parse(value.substring(4));
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        "${f2.format(DateTime(int.parse(value.substring(0, 4)), month))} (${nf.format(
+                          items
+                              .where(
+                                  (cp) => DateTime.parse(cp[1]).month == month)
+                              .map((e) => double.parse(e[6]))
+                              .reduce((v, element) => v + element),
+                        )})",
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  },
+                  itemBuilder: (ctx, pago) {
+                    return Card(
+                      margin: const EdgeInsets.all(12.0),
+                      child: InkWell(
+                        onTap: () {},
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Lps. ${pago[6]} | ${pago[2]}",
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(height: 10.0),
+                              Text(
+                                "${pago[2]} ${pago[3]} ${pago[4]}",
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  color: Colors.black54,
                                 ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "${pago[2]} ${pago[3]} ${pago[4]}",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
+                              ),
+                              const SizedBox(height: 10.0),
+                              Text(
+                                "Registrado por ${pago[0]} ",
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  color: Colors.black54,
                                 ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Registrado por ${pago[0]} ",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
+                              ),
+                              const SizedBox(height: 10.0),
+                              Text(
+                                "Proveedor: ${pago[5]}",
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  color: Colors.black54,
                                 ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  "Proveedor: ${pago[5]}",
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                const SizedBox(height: 10.0),
-                                Text(
-                                  f.format(DateTime.parse(pago[1])),
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(color: Colors.black54),
-                                )
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 10.0),
+                              Text(
+                                f.format(DateTime.parse(pago[1])),
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(color: Colors.black54),
+                              )
+                            ],
                           ),
                         ),
-                      );
-                    });
+                      ),
+                    );
+                  },
+                );
               },
             );
           }),

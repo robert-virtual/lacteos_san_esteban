@@ -194,12 +194,12 @@ class Quesillo extends GetView<UserController> {
                                 ),
                                 const SizedBox(height: 10.0),
                                 Text(
-                                  "Almidon diclosan: ${item[10]} Gramos",
+                                  "Almidón diclosan: ${item[10]} Gramos",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
                                 Text(
-                                  "Requeson: ${item[11]} libras",
+                                  "Requesón: ${item[11]} libras",
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
