@@ -68,18 +68,19 @@ class PorCobrarForm extends GetView<UserController> {
           const Text("Cliente"),
           Obx(
             () => DropdownButton<String>(
-                value: controller.cliente.value,
-                items: controller.clientesCopy.value
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (text) {
-                  controller.cliente.value = text ?? controller.clientesCopy[0];
-                }),
+              value: controller.cliente.value,
+              items: controller.clientesCopy.value
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(e),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (text) {
+                controller.cliente.value = text ?? controller.clientesCopy[0];
+              },
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -166,7 +167,7 @@ class PorCobrarForm extends GetView<UserController> {
             loadingWidget: const Center(child: CircularProgressIndicator()),
             asyncFunction: () async {
               //guardar cuenta por cobrar
-              await controller.sendSheet(
+              String res = await controller.sendSheet(
                 "CuentasPorCobrar!A:G",
                 [
                   controller.userName.value,
@@ -178,14 +179,13 @@ class PorCobrarForm extends GetView<UserController> {
                 ],
               );
               // guardar cliente
-              if (cliente.text.isNotEmpty &&
-                  !controller.clientesCopy.value
-                      .contains(cliente.text.trim())) {
+              if (cliente.text.isNotEmpty) {
                 await controller.sendSheet(
                   "Metadata!E${controller.clientesCopy.value.length + 1}",
                   [cliente.text.trim()],
                 );
               }
+              return res;
             },
           );
           Get.back();
@@ -193,15 +193,6 @@ class PorCobrarForm extends GetView<UserController> {
         },
       ),
     );
-  }
-
-  bool checkInputs() {
-    if (controller.cliente.value.isEmpty) {
-      Get.snackbar(
-          "No Se Puede Guardar Registro", "Debes Ingresar Un Proveedor");
-      return true;
-    }
-    return false;
   }
 
   bool checkData() {

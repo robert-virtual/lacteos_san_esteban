@@ -185,38 +185,42 @@ class PorPagarForm extends GetView<UserController> {
             );
             return;
           }
-          await Get.showOverlay(
+          String res = await Get.showOverlay(
             loadingWidget: const Center(child: CircularProgressIndicator()),
             asyncFunction: () async {
               //guardar cuenta por pagar
-              try {
+              String res = await controller.sendSheet(
+                "CuentasPorPagar!A:G",
+                [
+                  controller.userName.value,
+                  f2.format(DateTime.now()),
+                  controller.servicioProductoPagar.value,
+                  cantidad.text.isEmpty
+                      ? ""
+                      : controller.servicioProductoPagar.value == "Préstamo"
+                          ? 1
+                          : double.parse(cantidad.text),
+                  cantidad.text.isEmpty
+                      ? ""
+                      : controller.servicioProductoPagar.value == "Préstamo"
+                          ? ""
+                          : controller.unidad.value,
+                  controller.proveedor.value,
+                  double.parse(monto.text)
+                ],
+              );
+              // guardar nuevo proveedor en caso de estar vacio no se gurdara
+              if (proveedor.text.isNotEmpty) {
                 await controller.sendSheet(
-                  "CuentasPorPagar!A:G",
-                  [
-                    controller.userName.value,
-                    f2.format(DateTime.now()),
-                    controller.servicioProductoPagar.value,
-                    cantidad.text.isEmpty ? "" : double.parse(cantidad.text),
-                    cantidad.text.isEmpty ? "" : controller.unidad.value,
-                    controller.proveedor.value,
-                    double.parse(monto.text)
-                  ],
+                  "Metadata!D${controller.proveedoresCopy.value.length + 1}",
+                  [proveedor.text.trim()],
                 );
-                // guardar nuevo proveedor en caso de estar vacio no se gurdara
-                if (proveedor.text.isNotEmpty &&
-                    !controller.proveedoresCopy.value
-                        .contains(proveedor.text.trim())) {
-                  await controller.sendSheet(
-                      "Metadata!D${controller.proveedoresCopy.value.length + 1}",
-                      [proveedor.text.trim()]);
-                }
-                Get.snackbar("Guardar Datos", "Datos guardados con exito");
-                Get.back();
-              } catch (e) {
-                Get.snackbar("Error al guardar datos", e.toString());
               }
+              return res;
             },
           );
+          Get.back();
+          Get.snackbar("Guardar Datos", res);
         },
       ),
     );

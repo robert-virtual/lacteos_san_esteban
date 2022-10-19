@@ -119,8 +119,7 @@ class UserController extends GetxController {
           "values": [values]
         }));
     if (res.statusCode != 200) {
-      print(res.body);
-      throw Exception("Hubo un error al guardar los datos (${res.statusCode})");
+      return "Hubo un error al guardar los datos (${res.statusCode})";
     }
     return "Datos guardados con exito";
   }
@@ -160,14 +159,24 @@ class UserController extends GetxController {
     tipoQuesillo.value =
         productosCobrarCopy.value.where((e) => e.startsWith("Quesillo")).first;
 
-    proveedor.value = proveedoresCopy.value.first;
-    cliente.value = clientesCopy.value.first;
-    registradoPor.value = registradoresCopy.value.first;
+    if (proveedoresCopy.value.length > 0) {
+      proveedor.value = proveedoresCopy.value.first;
+    }
+    if (clientesCopy.value.length > 0) {
+      cliente.value = clientesCopy.value.first;
+    }
+    if (registradoresCopy.value.length > 0) {
+      registradoPor.value = registradoresCopy.value.first;
+    }
     final idx = account!.email.indexOf("@");
-    userName.value = account!.displayName ?? account!.email.substring(0, idx);
-    if (registradoresCopy.isNotEmpty &&
+    final email = account!.email.substring(0, idx);
+    userName.value = account!.displayName != null
+        ? "${account!.displayName} - $email"
+        : email;
+    if (registradoresCopy.value.isEmpty ||
         !registradoresCopy.contains(userName.value)) {
-      await sendSheet("Metadata!F${registradoresCopy.length + 2}", [userName]);
+      await sendSheet(
+          "Metadata!F${registradoresCopy.length + 2}", [userName.value]);
       final lista = await getSheet("Metadata!F:F",
           removeFisrt: false,
           reversed: false,
