@@ -95,6 +95,25 @@ class CuajadaForm extends GetView<UserController> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.send),
         onPressed: () async {
+          if (checkData()) {
+            Get.dialog(
+              AlertDialog(
+                title: const Text("Falta informacion"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [Text("Debes llenar todos los campos")],
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("OK")),
+                ],
+              ),
+            );
+            return;
+          }
           final res = await Get.showOverlay(
               loadingWidget: const Center(child: CircularProgressIndicator()),
               asyncFunction: () async {
@@ -109,12 +128,20 @@ class CuajadaForm extends GetView<UserController> {
                   sueroParaCuajar.text,
                 ];
                 await controller.sendSheet("Cuajada!A:H", data);
-
               });
           Get.back();
           Get.snackbar("Guardar Datos", res);
         },
       ),
     );
+  }
+
+  bool checkData() {
+    return libras.text.isEmpty ||
+        lecheEntera.text.isEmpty ||
+        lecheDescremada.text.isEmpty ||
+        sal.text.isEmpty ||
+        cuajo.text.isEmpty ||
+        sueroParaCuajar.text.isEmpty;
   }
 }

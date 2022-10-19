@@ -87,55 +87,70 @@ class PorPagarForm extends GetView<UserController> {
           const Text("Proveedor"),
           Obx(
             () => DropdownButton<String>(
-                value: controller.proveedor.value,
-                items: controller.proveedoresCopy.value
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (text) {
-                  controller.proveedor.value =
-                      text ?? controller.proveedoresCopy[0];
-                }),
+              value: controller.proveedor.value,
+              items: controller.proveedoresCopy.value
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(e),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (text) {
+                controller.proveedor.value =
+                    text ?? controller.proveedoresCopy[0];
+              },
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              Get.dialog(AlertDialog(
-                title: const Text("Agregar Proveedor"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: proveedor,
-                      decoration: const InputDecoration(
-                        label: Text("Nombre de Proveedor"),
-                      ),
-                    )
-                  ],
-                ),
-                actions: [
-                  TextButton(
+              Get.dialog(
+                AlertDialog(
+                  title: const Text("Agregar Proveedor"),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: proveedor,
+                        decoration: const InputDecoration(
+                          label: Text("Nombre de Proveedor"),
+                        ),
+                      )
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text("Cancelar")),
-                  TextButton(
-                      onPressed: () async {
-                        controller.proveedoresCopy.value = [
-                          ...controller.proveedoresCopy.value,
-                          proveedor.text
-                        ];
-                        controller.proveedor.value = proveedor.text;
-                        if (Get.context != null) {
-                          Navigator.pop(Get.context!);
-                        }
-                      },
-                      child: const Text("Guardar"))
-                ],
-              ));
+                      child: const Text("Cancelar"),
+                    ),
+                    TextButton(
+                        onPressed: () async {
+                          if (proveedor.text.trim().isEmpty) {
+                            proveedor.text = "";
+                            return;
+                          }
+                          if (controller.proveedoresCopy
+                              .contains(proveedor.text.trim())) {
+                            Get.back();
+                            controller.proveedor.value = proveedor.text.trim();
+                            return;
+                          }
+                          controller.proveedoresCopy.value = [
+                            ...controller.proveedoresCopy.value,
+                            proveedor.text.trim()
+                          ];
+                          controller.proveedor.value = proveedor.text.trim();
+
+                          if (Get.context != null) {
+                            Navigator.pop(Get.context!);
+                          }
+                        },
+                        child: const Text("Guardar"))
+                  ],
+                ),
+              );
             },
             child: const Text("Agregar Proveedor"),
           ),
@@ -148,49 +163,68 @@ class PorPagarForm extends GetView<UserController> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.send),
-          onPressed: () async {
-            if (checkInputs()) {
-              return;
-            }
-            await Get.showOverlay(
-              loadingWidget: const Center(child: CircularProgressIndicator()),
-              asyncFunction: () async {
-                //guardar cuenta por pagar
-                try {
-                  await controller.sendSheet(
-                    "CuentasPorPagar!A:G",
-                    [
-                      controller.userName.value,
-                      f2.format(DateTime.now()),
-                      controller.servicioProductoPagar.value,
-                      cantidad.text.isEmpty ? "" : double.parse(cantidad.text),
-                      cantidad.text.isEmpty ? "" : controller.unidad.value,
-                      controller.proveedor.value,
-                      double.parse(monto.text)
-                    ],
-                  );
-                  // guardar proveedor
+        child: const Icon(Icons.send),
+        onPressed: () async {
+          if (checkData()) {
+            Get.dialog(
+              AlertDialog(
+                title: const Text("Falta informacion"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [Text("Debes llenar todos los campos")],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+            );
+            return;
+          }
+          await Get.showOverlay(
+            loadingWidget: const Center(child: CircularProgressIndicator()),
+            asyncFunction: () async {
+              //guardar cuenta por pagar
+              try {
+                await controller.sendSheet(
+                  "CuentasPorPagar!A:G",
+                  [
+                    controller.userName.value,
+                    f2.format(DateTime.now()),
+                    controller.servicioProductoPagar.value,
+                    cantidad.text.isEmpty ? "" : double.parse(cantidad.text),
+                    cantidad.text.isEmpty ? "" : controller.unidad.value,
+                    controller.proveedor.value,
+                    double.parse(monto.text)
+                  ],
+                );
+                // guardar nuevo proveedor en caso de estar vacio no se gurdara
+                if (proveedor.text.isNotEmpty &&
+                    !controller.proveedoresCopy.value
+                        .contains(proveedor.text.trim())) {
                   await controller.sendSheet(
                       "Metadata!D${controller.proveedoresCopy.value.length + 1}",
-                      [proveedor.text]);
-                  Get.snackbar("Guardar Datos", "Datos guardados con exito");
-                } catch (e) {
-                  Get.snackbar("Error al guardar datos", e.toString());
+                      [proveedor.text.trim()]);
                 }
-              },
-            );
-            Get.back();
-          }),
+                Get.snackbar("Guardar Datos", "Datos guardados con exito");
+                Get.back();
+              } catch (e) {
+                Get.snackbar("Error al guardar datos", e.toString());
+              }
+            },
+          );
+        },
+      ),
     );
   }
 
-  bool checkInputs() {
-    if (controller.proveedor.value.isEmpty) {
-      Get.snackbar(
-          "No Se Puede Guardar Registro", "Debes Ingresar Un Proveedor");
-      return true;
-    }
-    return false;
+  bool checkData() {
+    return monto.text.isEmpty ||
+        (controller.servicioProductoPagar.value != "Préstamo" &&
+            cantidad.text.isEmpty);
   }
 }

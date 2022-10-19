@@ -15,110 +15,138 @@ class MantequillaForm extends GetView<UserController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Registrar Mantequilla")),
-        body: ListView(
-          padding: const EdgeInsets.all(10),
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              "Registrar producción de Mantequilla",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20.0),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: libras,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Libras Producidas",
-                ),
+      appBar: AppBar(title: const Text("Registrar Mantequilla")),
+      body: ListView(
+        padding: const EdgeInsets.all(10),
+        children: [
+          const SizedBox(height: 20),
+          const Text(
+            "Registrar producción de Mantequilla",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20.0),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            keyboardType: TextInputType.number,
+            controller: libras,
+            decoration: const InputDecoration(
+              label: Text(
+                "Libras Producidas",
               ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: lecheEntera,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Leche entera usada (Litros)",
-                ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            keyboardType: TextInputType.number,
+            controller: lecheEntera,
+            decoration: const InputDecoration(
+              label: Text(
+                "Leche entera usada (Litros)",
               ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: mantequillaCrema,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Mantequilla Crema (Libras)",
-                ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            keyboardType: TextInputType.number,
+            controller: mantequillaCrema,
+            decoration: const InputDecoration(
+              label: Text(
+                "Mantequilla Crema (Libras)",
               ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: cremaIndustrial,
-              decoration: const InputDecoration(
-                label: Text(
-                  "Crema Industrial (Libras)",
-                ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            keyboardType: TextInputType.number,
+            controller: cremaIndustrial,
+            decoration: const InputDecoration(
+              label: Text(
+                "Crema Industrial (Libras)",
               ),
             ),
-            const SizedBox(height: 20),
-            const Text("Tipo de Mantequilla"),
-            Obx(
-              () => DropdownButton<String>(
-                  value: controller.tipoMantequilla.value,
-                  items: controller.productosCobrarCopy
-                      .where((prod) => prod.startsWith("Mantequilla"))
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  onChanged: (text) {
-                    if (text != null) controller.tipoMantequilla.value = text;
-                  }),
-            ),
-            Obx(
-              () => Visibility(
-                  visible: controller.tipoMantequilla.value !=
-                      "Mantequilla Crema Sin Sal",
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    controller: sal,
-                    decoration: const InputDecoration(
-                      label: Text(
-                        "Sal Usada (gramos)",
-                      ),
+          ),
+          const SizedBox(height: 20),
+          const Text("Tipo de Mantequilla"),
+          Obx(
+            () => DropdownButton<String>(
+                value: controller.tipoMantequilla.value,
+                items: controller.productosCobrarCopy
+                    .where((prod) => prod.startsWith("Mantequilla"))
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (text) {
+                  if (text != null) controller.tipoMantequilla.value = text;
+                }),
+          ),
+          Obx(
+            () => Visibility(
+                visible: controller.tipoMantequilla.value !=
+                    "Mantequilla Crema Sin Sal",
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  controller: sal,
+                  decoration: const InputDecoration(
+                    label: Text(
+                      "Sal Usada (gramos)",
                     ),
-                  )),
-            ),
-            const SizedBox(height: 20),
-            Obx(() => Text("Registrado por ${controller.userName.value}")),
-            const SizedBox(height: 20),
-            Text("Fecha: ${f.format(DateTime.now())}"),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.send),
-            onPressed: () async {
-              final res = await Get.showOverlay(
-                  loadingWidget:
-                      const Center(child: CircularProgressIndicator()),
-                  asyncFunction: () async =>
-                      await controller.sendSheet("Mantequilla!A:H", [
-                        controller.userName.value,
-                        f2.format(DateTime.now()),
-                        libras.text,
-                        controller.tipoMantequilla.value,
-                        lecheEntera.text,
-                        controller.tipoMantequilla.value.contains("Sin")
-                            ? 0
-                            : sal.text,
-                        mantequillaCrema.text,
-                        cremaIndustrial.text,
-                      ]));
-              Get.back();
-              Get.snackbar("Guardar Datos", res);
-            }));
+                  ),
+                )),
+          ),
+          const SizedBox(height: 20),
+          Obx(() => Text("Registrado por ${controller.userName.value}")),
+          const SizedBox(height: 20),
+          Text("Fecha: ${f.format(DateTime.now())}"),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.send),
+        onPressed: () async {
+          if (checkData()) {
+            Get.dialog(
+              AlertDialog(
+                title: const Text("Falta informacion"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [Text("Debes llenar todos los campos")],
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("OK")),
+                ],
+              ),
+            );
+            return;
+          }
+          final res = await Get.showOverlay(
+              loadingWidget: const Center(child: CircularProgressIndicator()),
+              asyncFunction: () async =>
+                  await controller.sendSheet("Mantequilla!A:H", [
+                    controller.userName.value,
+                    f2.format(DateTime.now()),
+                    libras.text,
+                    controller.tipoMantequilla.value,
+                    lecheEntera.text,
+                    controller.tipoMantequilla.value.contains("Sin")
+                        ? 0
+                        : sal.text,
+                    mantequillaCrema.text,
+                    cremaIndustrial.text,
+                  ]));
+          Get.back();
+          Get.snackbar("Guardar Datos", res);
+        },
+      ),
+    );
+  }
+
+  bool checkData() {
+    return libras.text.isEmpty ||
+        lecheEntera.text.isEmpty ||
+        mantequillaCrema.text.isEmpty ||
+        cremaIndustrial.text.isEmpty ||
+        (!controller.tipoMantequilla.contains("Sin") && sal.text.isEmpty);
   }
 }
