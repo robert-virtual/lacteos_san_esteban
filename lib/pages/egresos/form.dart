@@ -29,34 +29,41 @@ class PorPagarForm extends GetView<UserController> {
           ),
           Obx(
             () => DropdownButton<String>(
-                value: controller.servicioProductoPagar.value,
-                items: controller.serviciosProductosPagarCopy.value
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (text) {
-                  controller.servicioProductoPagar.value =
-                      text ?? controller.serviciosProductosPagarCopy.value[0];
-                }),
+              value: controller.servicioProductoPagar.value,
+              items: controller.serviciosProductosPagarCopy.value
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(e),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (text) {
+                controller.servicioProductoPagar.value =
+                    text ?? controller.serviciosProductosPagarCopy.value[0];
+              },
+            ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Flexible(
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  controller: cantidad,
-                  decoration: const InputDecoration(
-                    label: Text(
-                      "Cantidad",
+          Obx(
+            () => Visibility(
+            visible: controller.servicioProductoPagar.value != "Préstamo",
+              child: Row(
+                children: [
+                  Flexible(
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      controller: cantidad,
+                      decoration: const InputDecoration(
+                        label: Text(
+                          "Cantidad",
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Column(
-                children: [
-                  const Text("Unidad de medida"),
-                  Obx(
-                    () => DropdownButton<String>(
+                  Column(
+                    children: [
+                      const Text("Unidad de medida"),
+                      DropdownButton<String>(
                         underline: null,
                         value: controller.unidad.value,
                         items: controller.unidadesCopy.value
@@ -67,11 +74,13 @@ class PorPagarForm extends GetView<UserController> {
                               ),
                             )
                             .toList(),
-                        onChanged: controller.setUnidad),
+                        onChanged: controller.setUnidad,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 20),
           TextField(
@@ -126,28 +135,29 @@ class PorPagarForm extends GetView<UserController> {
                       child: const Text("Cancelar"),
                     ),
                     TextButton(
-                        onPressed: () async {
-                          if (proveedor.text.trim().isEmpty) {
-                            proveedor.text = "";
-                            return;
-                          }
-                          if (controller.proveedoresCopy
-                              .contains(proveedor.text.trim())) {
-                            Get.back();
-                            controller.proveedor.value = proveedor.text.trim();
-                            return;
-                          }
-                          controller.proveedoresCopy.value = [
-                            ...controller.proveedoresCopy.value,
-                            proveedor.text.trim()
-                          ];
+                      onPressed: () async {
+                        if (proveedor.text.trim().isEmpty) {
+                          proveedor.text = "";
+                          return;
+                        }
+                        if (controller.proveedoresCopy
+                            .contains(proveedor.text.trim())) {
+                          Get.back();
                           controller.proveedor.value = proveedor.text.trim();
+                          return;
+                        }
+                        controller.proveedoresCopy.value = [
+                          ...controller.proveedoresCopy.value,
+                          proveedor.text.trim()
+                        ];
+                        controller.proveedor.value = proveedor.text.trim();
 
-                          if (Get.context != null) {
-                            Navigator.pop(Get.context!);
-                          }
-                        },
-                        child: const Text("Guardar"))
+                        if (Get.context != null) {
+                          Navigator.pop(Get.context!);
+                        }
+                      },
+                      child: const Text("Guardar"),
+                    )
                   ],
                 ),
               );
