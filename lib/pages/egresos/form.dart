@@ -46,7 +46,7 @@ class PorPagarForm extends GetView<UserController> {
           ),
           Obx(
             () => Visibility(
-            visible: controller.servicioProductoPagar.value != "Préstamo",
+              visible: controller.servicioProductoPagar.value != "Préstamo",
               child: Row(
                 children: [
                   Flexible(
@@ -199,24 +199,26 @@ class PorPagarForm extends GetView<UserController> {
             loadingWidget: const Center(child: CircularProgressIndicator()),
             asyncFunction: () async {
               //guardar cuenta por pagar
+              final cantidad_ = cantidad.text.isEmpty
+                  ? ""
+                  : controller.servicioProductoPagar.value == "Préstamo"
+                      ? 1
+                      : cantidad.text;
+              final unidad_ = cantidad.text.isEmpty
+                  ? ""
+                  : controller.servicioProductoPagar.value == "Préstamo"
+                      ? ""
+                      : controller.unidad.value;
               String res = await controller.sendSheet(
                 "CuentasPorPagar!A:G",
                 [
                   controller.userName.value,
                   f2.format(DateTime.now()),
                   controller.servicioProductoPagar.value,
-                  cantidad.text.isEmpty
-                      ? ""
-                      : controller.servicioProductoPagar.value == "Préstamo"
-                          ? 1
-                          : double.parse(cantidad.text),
-                  cantidad.text.isEmpty
-                      ? ""
-                      : controller.servicioProductoPagar.value == "Préstamo"
-                          ? ""
-                          : controller.unidad.value,
+                  cantidad_,
+                  unidad_,
                   controller.proveedor.value,
-                  double.parse(monto.text)
+                  monto.text
                 ],
               );
               // guardar nuevo proveedor en caso de estar vacio no se gurdara

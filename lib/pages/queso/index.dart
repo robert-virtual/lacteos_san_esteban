@@ -197,26 +197,26 @@ class Queso extends GetView<UserController> {
                                   textAlign: TextAlign.left,
                                   style: textGray,
                                 ),
-                                Visibility(
-                                    visible: item[3] == "Queso con chile",
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 10.0),
-                                        Text(
-                                          "Chile Jalapeño: ${item[9]}",
-                                          textAlign: TextAlign.left,
-                                          style: textGray,
-                                        ),
-                                        const SizedBox(height: 10.0),
-                                        Text(
-                                          "Chile bolsón verde rojo y amarillo: ${item[10]}",
-                                          textAlign: TextAlign.left,
-                                          style: textGray,
-                                        ),
-                                      ],
-                                    )),
+                                item[3] == "Queso con chile"
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 10.0),
+                                          Text(
+                                            "Chile Jalapeño: ${item.length == 11 ? item[9] : ""}",
+                                            textAlign: TextAlign.left,
+                                            style: textGray,
+                                          ),
+                                          const SizedBox(height: 10.0),
+                                          Text(
+                                            "Chile bolsón verde rojo y amarillo: ${item.length == 11 ? item[10] : ""}",
+                                            textAlign: TextAlign.left,
+                                            style: textGray,
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
                                 const SizedBox(height: 10.0),
                                 Text(
                                   "Registrado por ${item[0]} ",
