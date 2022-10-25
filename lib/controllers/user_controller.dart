@@ -59,24 +59,28 @@ class UserController extends GetxController {
 
   var searchSelectedaArg = "".obs;
   GoogleSignInAccount? account;
-  var loading = true.obs;
+  var loading = false.obs;
   @override
   void onInit() {
     super.onInit();
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? _account) {
       account = _account;
       update();
-      loadMetadata();
-      loading.value = false;
-    });
-    googleSignIn.signInSilently().then((account_) {
-      update();
-      loading.value = false;
-      if (account_ != null) {
-        Get.toNamed("/home");
+      if (_account != null) {
         loadMetadata();
+        loading.value = false;
+        Get.toNamed("/home");
       }
     });
+    googleSignIn.signInSilently();
+    /* .then((account_) { */
+    /* update(); */
+    /* loading.value = false; */
+    /* if (account_ != null) { */
+    /*   Get.toNamed("/home"); */
+    /*   loadMetadata(); */
+    /* } */
+    /* }); */
   }
 
   Future<List<List>> getSheet(
@@ -93,11 +97,12 @@ class UserController extends GetxController {
         Uri.parse(
             '$baseUrl${spread ?? spreadsheetId}/values/$sheetAndRange?majorDimension=${majorDimension.name}'),
         headers: await account!.authHeaders);
+    print("body:${jsonDecode(res.body)}");
     if (res.statusCode != 200) {
-      print(jsonDecode(res.body));
       throw Exception(
           "Ups algo ha salido mal, vuelve a intentar más tarde. Error: ${res.statusCode}");
     }
+
     final Map<String, dynamic> data =
         json.decode(res.body) as Map<String, dynamic>;
     List<List> lista = List.from(data["values"]);

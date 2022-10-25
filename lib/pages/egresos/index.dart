@@ -115,12 +115,14 @@ class PorPagar extends GetView<UserController> {
                 ),
               );
             }
-            if (snap.data!.isEmpty) {
+            final data = snap.data ?? List.empty();
+            if (data.isEmpty) {
               return const Center(child: Text("No hay datos que mostrar"));
             }
+            print("data: $data");
             return Obx(
               () {
-                final items = snap.data!
+                final items = data
                     .where(
                       (e) =>
                           filterName(e[2]) &&
@@ -130,7 +132,6 @@ class PorPagar extends GetView<UserController> {
                           filterByRegistrador(e[0]),
                     )
                     .toList();
-
                 return GroupedListView<List<dynamic>, String>(
                   elements: items,
                   groupBy: (List e) => f3.format(DateTime.parse(e[1])),
